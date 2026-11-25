@@ -4,7 +4,7 @@ resolver = "3"
 
 [package]
 name = "serenade-rangular-mcp"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 rust-version = "1.100"
 description = "Source-backed Serenade and Rangular documentation MCP"
@@ -14,7 +14,16 @@ authors = ["Interchouette"]
 repository = "https://github.com/Interchouette-ITC/serenade-rangular-mcp"
 homepage = "https://docs.serenade.rs"
 license = "Apache-2.0"
-include = ["src/**", "tests/**", "build.rs", "Cargo.toml", "corpus/**", "docs/**", "docker/README.md", "LICENSE"]
+include = [
+  "src/**",
+  "tests/**",
+  "build.rs",
+  "Cargo.toml",
+  "corpus/**",
+  "docs/**",
+  "docker/README.md",
+  "LICENSE",
+]
 
 [dependencies]
 anyhow = "1"
