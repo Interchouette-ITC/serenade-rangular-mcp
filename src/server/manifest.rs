@@ -107,3 +107,75 @@ pub fn inspect(source: &str, profile: Profile) -> Result<Value, ErrorData> {
         "scope": "Declarations in the supplied manifest only; workspace-inherited dependencies and Cargo's resolved graph require their own manifests or cargo metadata."
     }))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{Profile, inspect};
+    use std::fmt::Write;
+
+    #[test]
+    fn rejects_invalid_manifest_shapes_and_size() {
+        for (source, message) in [
+            (
+                "dependencies = 'invalid'",
+                "dependencies must be a TOML table",
+            ),
+            (
+                "[dependencies]\nui = 42",
+                "dependencies.ui must be a version string or table",
+            ),
+            (
+                "[dependencies]\nui = { package = 42 }",
+                "dependencies.ui.package must be a string",
+            ),
+            ("target = 42", "target must be a TOML table"),
+            ("[target]\nlinux = 42", "target.linux must be a TOML table"),
+        ] {
+            let error = inspect(source, Profile::All).unwrap_err();
+            assert!(error.message.contains(message), "{error:?}");
+        }
+        let error = inspect(&" ".repeat(64_001), Profile::All).unwrap_err();
+        assert!(error.message.contains("manifest exceeds 64,000 bytes"));
+    }
+
+    #[test]
+    fn limits_matching_dependencies_and_filters_profiles() {
+        let mut source = String::from("[dependencies]\n");
+        for index in 0..100 {
+            writeln!(
+                source,
+                "ui{index} = {{ package = 'rangular', version = '1' }}"
+            )
+            .unwrap();
+        }
+        assert_eq!(
+            inspect(&source, Profile::Rangular).unwrap()["dependencies"]
+                .as_array()
+                .unwrap()
+                .len(),
+            100
+        );
+        source.push_str("ui100 = { package = 'rangular', version = '1' }\n");
+        let error = inspect(&source, Profile::All).unwrap_err();
+        assert!(
+            error
+                .message
+                .contains("more than 100 matching dependencies")
+        );
+        let filtered = inspect(&source, Profile::Serenade).unwrap();
+        assert_eq!(filtered["dependencies"], serde_json::json!([]));
+    }
+
+    #[test]
+    fn inspects_workspace_dependencies_and_ignores_unrelated_packages() {
+        let result = inspect(
+            "[workspace.dependencies]\nui = { package = 'rangular', version = '1' }\nserde = '1'\n",
+            Profile::All,
+        )
+        .unwrap();
+        let dependencies = result["dependencies"].as_array().unwrap();
+        assert_eq!(dependencies.len(), 1);
+        assert_eq!(dependencies[0]["package"], "rangular");
+        assert_eq!(dependencies[0]["scope"], "workspace.dependencies");
+    }
+}

@@ -239,6 +239,16 @@ async fn exercise_documents(client: &Peer<RoleClient>) -> anyhow::Result<()> {
         assert!(note.contains("differs from the recorded Serenade revision"));
     }
     let first_page = call(client, "list_docs", json!({"limit":1})).await?;
+    let filtered = call(
+        client,
+        "list_docs",
+        json!({"product":"serenade","group":"docs-dev","limit":1}),
+    )
+    .await?;
+    assert_eq!(filtered["items"][0]["group"], "docs-dev");
+    let end = call(client, "list_docs", json!({"cursor":first_page["total"]})).await?;
+    assert_eq!(end["items"], json!([]));
+    assert!(end["next_cursor"].is_null());
     let next_page = call(
         client,
         "list_docs",
@@ -399,8 +409,18 @@ async fn exercise_validation(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     );
     for (name, args) in [
         ("search_docs", json!({"query":" "})),
+        ("search_docs", json!({"query":"!!!"})),
         ("list_docs", json!({"limit":51})),
+        ("list_docs", json!({"cursor":usize::MAX})),
         ("inspect_cargo_manifest", json!({"manifest":"[broken"})),
+        (
+            "get_doc",
+            json!({"id":"rangular/docs/SPEC.md", "section":"not-a-section"}),
+        ),
+        (
+            "validate_rangular_template",
+            json!({"source":"x".repeat(64_001)}),
+        ),
         (
             "validate_rangular_template",
             json!({"source":"", "kind":"unknown"}),
@@ -416,6 +436,13 @@ async fn exercise_validation(client: &Peer<RoleClient>) -> anyhow::Result<()> {
                 .is_err()
         );
     }
+    let head = call(
+        client,
+        "validate_rangular_template",
+        json!({"source":"<title>Hello</title>", "kind":"head"}),
+    )
+    .await?;
+    assert_eq!(head["valid"], true);
     assert!(bad["diagnostics"][0]["line"].as_u64().is_some());
     let many = call(
         client,
@@ -464,6 +491,23 @@ async fn exercise_resources(client: &Peer<RoleClient>) -> anyhow::Result<()> {
             "docs://serenade/docs-dev/RECIPES.md",
         ))
         .await?;
+    let source = client
+        .read_resource(ReadResourceRequestParams::new(
+            "docs://serenade/examples/demo-app/src/main.rs",
+        ))
+        .await?;
+    assert_eq!(
+        serde_json::to_value(source)?["contents"][0]["mimeType"],
+        "text/plain"
+    );
+    for uri in ["https://example.test/doc", "docs://missing"] {
+        assert!(
+            client
+                .read_resource(ReadResourceRequestParams::new(uri))
+                .await
+                .is_err()
+        );
+    }
     assert!(
         client
             .call_tool(
@@ -577,6 +621,18 @@ async fn local_cargo_actions_run_and_report_failures() -> anyhow::Result<()> {
             .unwrap()
             .contains("test result: ok")
     );
+    for task in ["check", "build"] {
+        let output = call(
+            client.peer(),
+            "run_cargo_task",
+            json!({
+                "directory": project.path(), "task": task, "package": "mcp-fixture",
+                "no_default_features": true, "release": true, "locked": true
+            }),
+        )
+        .await?;
+        assert_eq!(output["success"], true);
+    }
 
     std::fs::write(
         project.path().join("src/lib.rs"),
@@ -598,9 +654,24 @@ async fn local_cargo_actions_run_and_report_failures() -> anyhow::Result<()> {
             .unwrap()
             .contains("fixture error")
     );
+    reject_invalid_local_actions(client.peer(), project.path()).await?;
+    client.cancel().await?;
+    Ok(())
+}
+
+async fn reject_invalid_local_actions(
+    client: &Peer<RoleClient>,
+    project: &std::path::Path,
+) -> anyhow::Result<()> {
     for args in [
         json!({"directory":"relative", "task":"test"}),
-        json!({"directory":project.path(), "task":"test", "features":["--help"]}),
+        json!({"directory":project.join("missing"), "task":"test"}),
+        json!({"directory":project.join("Cargo.toml"), "task":"test"}),
+        json!({"directory":project.join("src"), "task":"test"}),
+        json!({"directory":project, "task":"test", "package":"--help"}),
+        json!({"directory":project, "task":"test", "features":[]}),
+        json!({"directory":project, "task":"test", "features":["--help"]}),
+        json!({"directory":project, "task":"test", "features":["bad feature"]}),
     ] {
         assert!(
             client
@@ -615,7 +686,7 @@ async fn local_cargo_actions_run_and_report_failures() -> anyhow::Result<()> {
     let existing = client
         .call_tool(
             CallToolRequestParams::new("scaffold_serenade_app").with_arguments(
-                json!({"directory":project.path(), "name":"src"})
+                json!({"directory":project, "name":"src"})
                     .as_object()
                     .unwrap()
                     .clone(),
@@ -623,6 +694,107 @@ async fn local_cargo_actions_run_and_report_failures() -> anyhow::Result<()> {
         )
         .await;
     assert!(existing.is_err());
+    for name in ["", "-invalid", "invalid-", "../escape"] {
+        assert!(
+            client
+                .call_tool(
+                    CallToolRequestParams::new("scaffold_serenade_app").with_arguments(
+                        json!({"directory":project, "name":name})
+                            .as_object()
+                            .unwrap()
+                            .clone()
+                    )
+                )
+                .await
+                .is_err()
+        );
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn http_startup_rejects_unsafe_bind_and_reports_occupied_port() -> anyhow::Result<()> {
+    let binary = env!("CARGO_BIN_EXE_serenade-rangular-mcp");
+    let unsafe_bind = Command::new(binary)
+        .env_remove("MCP_ALLOWED_HOSTS")
+        .args(["--transport", "http", "--bind", "0.0.0.0"])
+        .output()
+        .await?;
+    assert!(!unsafe_bind.status.success());
+    assert!(String::from_utf8_lossy(&unsafe_bind.stderr).contains("non-loopback HTTP requires"));
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let port = listener.local_addr()?.port().to_string();
+    let occupied = Command::new(binary)
+        .args([
+            "--transport",
+            "http",
+            "--bind",
+            "127.0.0.1",
+            "--port",
+            &port,
+            "--allowed-hosts",
+            "mcp.example.test",
+        ])
+        .output()
+        .await?;
+    assert!(!occupied.status.success());
+    assert_ne!(occupied.stderr, Vec::<u8>::new());
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn scaffold_invokes_cli_and_reports_command_failure() -> anyhow::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir()?;
+    let executable = directory.path().join("serenade");
+    std::fs::write(
+        &executable,
+        "#!/bin/sh\nif [ \"$2\" = fails ]; then echo 'fixture failure' >&2; exit 2; fi\nprintf '%s\\n' \"$@\"\n",
+    )?;
+    std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o755))?;
+    let path = std::env::join_paths(std::iter::once(directory.path().to_path_buf()).chain(
+        std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()),
+    ))?;
+    let mut command = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"));
+    command.env("PATH", path);
+    let client = ().serve(TokioChildProcess::new(command)?).await?;
+    let output = call(
+        client.peer(),
+        "scaffold_serenade_app",
+        json!({"directory":directory.path(), "name":"new-app"}),
+    )
+    .await?;
+    assert_eq!(output["success"], true);
+    assert_eq!(
+        output["stdout"],
+        format!(
+            "new\nnew-app\n--path\n{}\n",
+            directory.path().canonicalize()?.display()
+        )
+    );
+    let response = client
+        .call_tool(
+            CallToolRequestParams::new("scaffold_serenade_app").with_arguments(
+                json!({"directory":directory.path(), "name":"fails"})
+                    .as_object()
+                    .unwrap()
+                    .clone(),
+            ),
+        )
+        .await?;
+    assert_eq!(response.is_error, Some(true));
+    let failure: Value =
+        serde_json::from_str(&response.content[0].as_text().context("failure text")?.text)?;
+    assert_eq!(failure["exit_code"], 2);
+    assert!(
+        failure["stderr"]
+            .as_str()
+            .unwrap()
+            .contains("fixture failure")
+    );
     client.cancel().await?;
     Ok(())
 }

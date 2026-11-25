@@ -208,7 +208,8 @@ pub async fn cargo(args: CargoArgs) -> Result<(bool, Value), ErrorData> {
 
 #[cfg(test)]
 mod tests {
-    use super::{OUTPUT_LIMIT, capture};
+    use super::{OUTPUT_LIMIT, capture, run};
+    use tokio::process::Command;
 
     #[tokio::test]
     async fn output_capture_is_bounded_and_reports_truncation() {
@@ -219,5 +220,14 @@ mod tests {
         let (output, truncated) = capture(&input[..OUTPUT_LIMIT]).await.unwrap();
         assert_eq!(output.len(), OUTPUT_LIMIT);
         assert!(!truncated);
+    }
+
+    #[tokio::test]
+    async fn command_start_failure_is_reported() {
+        let directory = tempfile::tempdir().unwrap();
+        let error = run(Command::new(directory.path().join("missing-command")))
+            .await
+            .unwrap_err();
+        assert!(error.message.contains("cannot start command"));
     }
 }

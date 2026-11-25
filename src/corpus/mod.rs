@@ -255,7 +255,7 @@ mod tests {
 
     #[test]
     fn headings_ignore_code_fences_and_disambiguate_duplicates() {
-        let source = "# First\n```\n# fake\n```\n## First\n## First\n";
+        let source = "# First\n```\n~~~\n# fake\n```\n## First\n## First\n";
         let headings = sections(source);
         assert_eq!(
             headings.iter().map(|h| h.id.as_str()).collect::<Vec<_>>(),
