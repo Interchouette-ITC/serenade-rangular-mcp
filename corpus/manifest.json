@@ -1754,7 +1754,7 @@
       "id": "serenade/guides/how-to/agent-mcp.md",
       "path": "docs/astro/src/content/docs/how-to/agent-mcp.md",
       "product": "serenade",
-      "sha256": "bab7d94d8464cf6e4fbc9692c48bab0780d44828ea860c7630b04dcd271274e6",
+      "sha256": "4daedd9a89e7b09935898a4d828d84d60f85ab34a48ce54507d1cb4fd6d7ab36",
       "source_note": "Locally updated from the Serenade guide; this document differs from the recorded Serenade revision.",
       "title": "agent-mcp.md"
     },

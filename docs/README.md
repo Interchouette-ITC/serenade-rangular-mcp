@@ -51,17 +51,15 @@ For a stdio client:
 serenade-rangular-mcp --transport http --port 8765
 ```
 
-The endpoint is `http://127.0.0.1:8765/mcp`; `/health` is the health check.
+The endpoint is `http://127.0.0.1:8765/`; `/health` is the health check.
 For a public deployment, set `MCP_BIND=0.0.0.0`, `PORT` and
 `MCP_ALLOWED_HOSTS` (comma-separated hostnames). The server rejects browser
 Origin headers and uses no authentication. It only serves embedded public
 content and parses supplied template text; it cannot access a caller's files
 or execute commands. Use HTTPS at the reverse proxy.
 
-Render can eventually host the service at `mcp.serenade.rs`. It is not
-deployed by this repository. A sleeping service can take roughly 15 seconds to
-wake: allow sufficient client connection/request timeout and reconnect after
-a restart where the client supports it.
+Allow sufficient client connection/request timeout for a sleeping service to
+wake, and reconnect after a restart where the client supports it.
 
 ## Tools and resources
 
@@ -124,8 +122,8 @@ do not update themselves.
 Git preserves the embedded files' original bytes on every platform so Windows
 checkout line endings do not invalidate those hashes.
 The embedded agent guide has a local correction marked in its result metadata.
-Refresh rejects the old checkout-based guidance until the corrected upstream
-guide is available on the selected development branch.
+Refresh rejects outdated install or HTTP endpoint guidance until the corrected
+upstream guide is available on the selected development branch.
 
 The embedded upstream content is sourced from Serenade and Rangular, each
 distributed under Apache-2.0. Original source locations and revisions are

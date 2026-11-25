@@ -46,10 +46,8 @@ For local HTTP:
 serenade-rangular-mcp --transport http --profile all
 ```
 
-Connect to `http://127.0.0.1:8765/mcp`. Public hosting is not deployed by
-this project. A future service at `mcp.serenade.rs` may take roughly 15 seconds
-to wake up; configure client timeouts and retry/reconnect where supported.
-Public HTTP is read-only and does not access the caller's project.
+Connect to `http://127.0.0.1:8765/`. Public HTTP is read-only and does not
+access the caller's project.
 
 ## Markdown without MCP
 

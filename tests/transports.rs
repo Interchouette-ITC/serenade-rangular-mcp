@@ -234,6 +234,7 @@ async fn exercise_documents(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     let agent_markdown = agent_guide["markdown"].as_str().context("agent guide")?;
     assert!(agent_markdown.contains("cargo install --locked serenade-rangular-mcp"));
     assert!(!agent_markdown.contains("cargo install --locked --path"));
+    assert!(agent_markdown.contains("http://127.0.0.1:8765/`"));
     if let Some(note) = agent_guide["document"]["source_note"].as_str() {
         assert!(note.contains("differs from the recorded Serenade revision"));
     }
@@ -493,7 +494,7 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
         .kill_on_drop(true)
         .spawn()?;
     wait_ready(address, &mut process).await?;
-    let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
+    let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/"));
     let http_client = ().serve(transport).await?;
     let http_names = exercise(http_client.peer(), false).await?;
     assert_eq!(
@@ -504,19 +505,31 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
         http_names.iter().collect::<Vec<_>>()
     );
     http_client.cancel().await?;
-    let reconnect = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
+    let reconnect = StreamableHttpClientTransport::from_uri(format!("http://{address}/"));
     let reconnected = ().serve(reconnect).await?;
     assert_eq!(reconnected.list_all_tools().await?.len(), 6);
     reconnected.cancel().await?;
-    assert_eq!(http_status(address, "attacker.example", None, "{}")?, 403);
     assert_eq!(
-        http_status(address, "localhost", Some("https://attacker.example"), "{}")?,
+        http_status(address, "/", "attacker.example", None, "{}")?,
         403
     );
     assert_eq!(
-        http_status(address, "localhost", None, &"x".repeat(128_001))?,
+        http_status(
+            address,
+            "/",
+            "localhost",
+            Some("https://attacker.example"),
+            "{}"
+        )?,
+        403
+    );
+    assert_eq!(
+        http_status(address, "/", "localhost", None, &"x".repeat(128_001))?,
         413
     );
+    for path in ["/mcp", "/mcp/"] {
+        assert_eq!(http_status(address, path, "localhost", None, "{}")?, 404);
+    }
     process.kill().await?;
     process.wait().await?;
     let mut restarted = Command::new(binary)
@@ -525,7 +538,7 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
         .kill_on_drop(true)
         .spawn()?;
     wait_ready(address, &mut restarted).await?;
-    let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
+    let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/"));
     let client = ().serve(transport).await?;
     assert_eq!(client.list_all_tools().await?.len(), 6);
     client.cancel().await?;
@@ -638,7 +651,7 @@ async fn http_removes_local_actions_even_when_enabled_by_caller() -> anyhow::Res
     .context("HTTP server did not start")?;
     let client = ()
         .serve(StreamableHttpClientTransport::from_uri(format!(
-            "http://{address}/mcp"
+            "http://{address}/"
         )))
         .await?;
     let names = client.list_all_tools().await?;
@@ -663,6 +676,7 @@ async fn http_removes_local_actions_even_when_enabled_by_caller() -> anyhow::Res
 
 fn http_status(
     address: SocketAddr,
+    path: &str,
     host: &str,
     origin: Option<&str>,
     body: &str,
@@ -672,7 +686,7 @@ fn http_status(
     let origin = origin.map_or_else(String::new, |value| format!("Origin: {value}\r\n"));
     write!(
         stream,
-        "POST /mcp HTTP/1.1\r\nHost: {host}\r\n{origin}Content-Type: application/json\r\nAccept: application/json, text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        "POST {path} HTTP/1.1\r\nHost: {host}\r\n{origin}Content-Type: application/json\r\nAccept: application/json, text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
         body.len()
     )?;
     let mut response = String::new();
@@ -862,7 +876,7 @@ async fn http_product_profiles_serve_relevant_guidance() -> anyhow::Result<()> {
         wait_ready(address, &mut process).await?;
         let client = ()
             .serve(StreamableHttpClientTransport::from_uri(format!(
-                "http://{address}/mcp"
+                "http://{address}/"
             )))
             .await?;
         exercise_product_profile(client.peer(), profile).await?;

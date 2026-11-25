@@ -146,6 +146,10 @@ fn validate_source(product: &str, path: &str, text: &str) -> anyhow::Result<()> 
             text.contains("cargo install --locked serenade-rangular-mcp"),
             "upstream agent guide lacks the release install command; refresh after the guide is updated"
         );
+        ensure!(
+            text.contains("http://127.0.0.1:8765/`"),
+            "upstream agent guide lacks the root HTTP endpoint; refresh after the guide is updated"
+        );
     }
     Ok(())
 }
@@ -404,7 +408,7 @@ mod tests {
     }
 
     #[test]
-    fn refresh_rejects_outdated_agent_install_guidance() {
+    fn refresh_rejects_outdated_agent_guidance() {
         let path = "docs/astro/src/content/docs/how-to/agent-mcp.md";
         assert!(
             validate_source("serenade", path, "cargo install --locked --path /checkout").is_err()
@@ -414,6 +418,14 @@ mod tests {
                 "serenade",
                 path,
                 "cargo install --locked serenade-rangular-mcp"
+            )
+            .is_err()
+        );
+        assert!(
+            validate_source(
+                "serenade",
+                path,
+                "cargo install --locked serenade-rangular-mcp http://127.0.0.1:8765/`"
             )
             .is_ok()
         );

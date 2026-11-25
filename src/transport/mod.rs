@@ -48,8 +48,7 @@ pub async fn http(
     );
     let app = Router::new()
         .route("/health", get(|| async { "ok" }))
-        .route("/mcp", any_service(service.clone()))
-        .route("/mcp/", any_service(service))
+        .route("/", any_service(service))
         .layer(tower::limit::ConcurrencyLimitLayer::new(32));
     let listener = tokio::net::TcpListener::bind(address).await?;
     tracing::info!(%address, "MCP HTTP server listening");

@@ -7,9 +7,9 @@ make docker-build
 docker run --rm -p 127.0.0.1:8765:8765 serenade-rangular-mcp
 ```
 
-The MCP endpoint is `http://127.0.0.1:8765/mcp` and `/health` is the health
-check. The HTTP transport is read-only. For a public deployment, terminate
-HTTPS at a reverse proxy and set `MCP_ALLOWED_HOSTS` to the actual hostnames.
+The MCP endpoint is `http://127.0.0.1:8765/`; `/health` is the health check.
+The HTTP transport is read-only. For a public deployment, terminate HTTPS at a
+reverse proxy and set `MCP_ALLOWED_HOSTS` to the actual hostnames.
 The image defaults to `mcp.serenade.rs`; override this for other deployments.
 The server rejects browser Origin headers. See the [MCP guide](../docs/README.md)
 for transport and security details.

@@ -6,6 +6,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Move the Streamable HTTP endpoint from `/mcp` to `/`.
+
 ## [1.0.0]
 
 ### Added
