@@ -218,6 +218,40 @@ fn chunk(body: &str, offset: Option<usize>) -> Result<(Option<&str>, Option<usiz
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::BTreeSet;
+
+    #[test]
+    fn manifest_has_unique_documents_with_valid_provenance() {
+        let corpus = manifest();
+        let mut ids = BTreeSet::new();
+        for document in &corpus.documents {
+            assert!(ids.insert(&document.id), "duplicate ID: {}", document.id);
+            assert!(document.id.starts_with(&format!("{}/", document.product)));
+            let product = corpus.products.get(&document.product).expect("product");
+            assert_ne!(product.version, "");
+            assert_eq!(product.revision.len(), 40);
+            assert!(
+                product
+                    .revision
+                    .bytes()
+                    .all(|byte| byte.is_ascii_hexdigit())
+            );
+            assert!(
+                !document
+                    .path
+                    .starts_with("docs/astro/src/content/docs/source-guides/")
+            );
+            assert_ne!(
+                document.path,
+                "docs/astro/src/content/docs/components/catalog.md"
+            );
+            assert!(
+                !text(document).is_empty(),
+                "empty document: {}",
+                document.id
+            );
+        }
+    }
 
     #[test]
     fn headings_ignore_code_fences_and_disambiguate_duplicates() {

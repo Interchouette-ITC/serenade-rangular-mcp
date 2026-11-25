@@ -1,5 +1,10 @@
 # Serenade and Rangular MCP
 
+<p align="center">
+  <a href="https://github.com/Interchouette-ITC/serenade-rangular-mcp/actions/workflows/ci.yml"><img src="https://github.com/Interchouette-ITC/serenade-rangular-mcp/actions/workflows/ci.yml/badge.svg?branch=dev" alt="CI" /></a>
+  <a href="https://codecov.io/gh/Interchouette-ITC/serenade-rangular-mcp"><img src="https://codecov.io/gh/Interchouette-ITC/serenade-rangular-mcp/branch/dev/graph/badge.svg" alt="codecov" /></a>
+</p>
+
 Source-backed documentation and Rangular template diagnostics for coding
 agents. One binary supports stdio and Streamable HTTP. Documentation is
 embedded in the binary; the website, source checkouts and network are not
@@ -116,6 +121,8 @@ parser is independent of the development documentation.
 The manifest records source paths, versions,
 revisions and content hashes. Builds verify those hashes; installed binaries
 do not update themselves.
+Git preserves the embedded files' original bytes on every platform so Windows
+checkout line endings do not invalidate those hashes.
 The embedded agent guide has a local correction marked in its result metadata.
 Refresh rejects the old checkout-based guidance until the corrected upstream
 guide is available on the selected development branch.
@@ -136,3 +143,20 @@ also require `cargo-outdated`, `cargo-llvm-cov` (plus `llvm-tools-preview`),
 The dependency policy records the `chrono` unmaintained advisory: it is
 transitive through rmcp and schemars and has no compatible maintained release.
 `make audit` continues to report this warning.
+
+CI also generates an LCOV report with `make coverage` and uploads it to
+Codecov. Upload errors do not fail CI, matching Serenade's CI policy.
+
+`make doc` generates rustdoc locally at
+`target/doc/serenade_rangular_mcp/index.html`. After CI succeeds on a push to
+`dev`, the workflow deploys rustdoc to `gh-pages`. GitHub Pages must be
+configured to serve that branch; the hosted documentation is not available
+until the deployment and Pages configuration succeed.
+
+## Project documentation
+
+- [Changelog](CHANGELOG.md)
+- [Releasing](RELEASING.md)
+- [Contributing](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)

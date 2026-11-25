@@ -27,3 +27,62 @@ jobs:
         with:
           tool: cargo-audit,cargo-deny,cargo-machete
       - run: make ci
+
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --locked --bin serenade-rangular-mcp
+
+  rustdoc:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    needs: rust
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: make doc
+      - name: Prepare Pages index
+        run: |
+          printf '%s\n' \
+            '<!DOCTYPE html>' \
+            '<html lang="en"><head><meta charset="utf-8">' \
+            '<meta http-equiv="refresh" content="0; url=serenade_rangular_mcp/index.html">' \
+            '<title>Serenade and Rangular MCP API documentation</title></head>' \
+            '<body><a href="serenade_rangular_mcp/index.html">API documentation</a></body></html>' \
+            > target/doc/index.html
+          touch target/doc/.nojekyll
+      - name: Deploy rustdoc to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
+        with:
+          folder: target/doc
+          branch: gh-pages
+          clean: true
+          commit-message: "Deploy documentation for ${{ github.sha }}"
+
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov@0.9.1
+      - run: make coverage
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          files: coverage/lcov.info
+          flags: rust
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

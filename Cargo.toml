@@ -8,6 +8,7 @@ version = "1.0.0"
 edition = "2024"
 rust-version = "1.100"
 description = "Source-backed Serenade and Rangular documentation MCP"
+readme = "docs/README.md"
 publish = true
 authors = ["Interchouette"]
 repository = "https://github.com/Interchouette-ITC/serenade-rangular-mcp"
