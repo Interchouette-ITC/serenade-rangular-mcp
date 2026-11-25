@@ -1,5 +1,8 @@
 //! MCP tools and resources.
 
+mod guidance;
+mod local;
+mod manifest;
 mod tools;
 
 use rmcp::{
@@ -50,18 +53,34 @@ impl Profile {
 pub struct DocsServer {
     pub(crate) profile: Profile,
     pub(crate) tool_router: ToolRouter<Self>,
+    pub(crate) local_actions: bool,
 }
 
 impl DocsServer {
     pub fn new(profile: Profile) -> Self {
+        Self::with_local_actions(profile, false)
+    }
+
+    pub fn with_local_actions(profile: Profile, local_actions: bool) -> Self {
         let mut tool_router = Self::tool_router();
         if profile == Profile::Serenade {
             tool_router.remove_route("validate_rangular_template");
         }
+        if !local_actions {
+            tool_router.remove_route("scaffold_serenade_app");
+            tool_router.remove_route("run_cargo_task");
+        } else if profile == Profile::Rangular {
+            tool_router.remove_route("scaffold_serenade_app");
+        }
         Self {
             profile,
             tool_router,
+            local_actions,
         }
+    }
+
+    pub(crate) fn read_only(self) -> Self {
+        Self::new(self.profile)
     }
 }
 
@@ -86,6 +105,15 @@ impl ServerHandler for DocsServer {
                  documentation; it is not an application build."
             }
         };
+        let actions = match (self.local_actions, self.profile) {
+            (true, Profile::Rangular) => {
+                "Local stdio tools can run Cargo check, build or test in a supplied directory."
+            }
+            (true, _) => {
+                "Local stdio tools can scaffold a Serenade application and run Cargo check, build or test in a supplied directory."
+            }
+            (false, _) => "This server does not read client files or run commands.",
+        };
         ServerConfig::new(
             ServerCapabilities::builder()
                 .enable_tools()
@@ -99,7 +127,9 @@ impl ServerHandler for DocsServer {
         .with_instructions(format!(
             "Search and read the embedded, revision-labelled documentation. \
              Code examples refer to the documented source revisions; repository examples may \
-             require their original workspaces. {instructions}"
+             require their original workspaces. Use get_coding_guide for concrete app and \
+             component workflows, and inspect_cargo_manifest for supplied Cargo manifest text. \
+             {actions} {instructions}"
         ))
     }
 

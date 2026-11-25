@@ -1,6 +1,69 @@
 {
   "documents": [
     {
+      "id": "rangular/crates/rangular-aot/README.md",
+      "path": "crates/rangular-aot/README.md",
+      "product": "rangular",
+      "sha256": "c8fa55564981d2b3654761d311be64d507d15e7ece680c765f05f1669ef3070c",
+      "title": "rangular-aot"
+    },
+    {
+      "id": "rangular/crates/rangular-build/README.md",
+      "path": "crates/rangular-build/README.md",
+      "product": "rangular",
+      "sha256": "2d45d34566cc88d507e0f566bc03eb5d284096c0b8e6564954a569bd2ea832d6",
+      "title": "rangular-build"
+    },
+    {
+      "id": "rangular/crates/rangular-css/README.md",
+      "path": "crates/rangular-css/README.md",
+      "product": "rangular",
+      "sha256": "19e80c8d1e595e1fa90564ab19f4c3281b2cb6523917838fde9979927cf16dba",
+      "title": "rangular-css"
+    },
+    {
+      "id": "rangular/crates/rangular-expr/README.md",
+      "path": "crates/rangular-expr/README.md",
+      "product": "rangular",
+      "sha256": "3bd1e0cece93a55a38d9f5036dba454d51c674e3eeb6cc10b981fecb181cc490",
+      "title": "rangular-expr"
+    },
+    {
+      "id": "rangular/crates/rangular-host/README.md",
+      "path": "crates/rangular-host/README.md",
+      "product": "rangular",
+      "sha256": "e1e8bb8c889c20f64dd4f26da6dccf10bd4634f4a339e72fb72cf296374931e4",
+      "title": "rangular-host"
+    },
+    {
+      "id": "rangular/crates/rangular-macros/README.md",
+      "path": "crates/rangular-macros/README.md",
+      "product": "rangular",
+      "sha256": "0aaa3b18f2eedec09a2f5da1d334b4cc2e83f0d38bc78d3af8ba92c04a489f3d",
+      "title": "rangular-macros"
+    },
+    {
+      "id": "rangular/crates/rangular-parser/README.md",
+      "path": "crates/rangular-parser/README.md",
+      "product": "rangular",
+      "sha256": "18a4cd1cdacdd9c9c4492afa24fab4f381bec7d764363e655c9cdbd9d4ae5f5e",
+      "title": "rangular-parser"
+    },
+    {
+      "id": "rangular/crates/rangular-runtime/README.md",
+      "path": "crates/rangular-runtime/README.md",
+      "product": "rangular",
+      "sha256": "612a5aca0f7b3bf9e42e96f822a819ecfca78cb5cb69e30fdaeca173d2c62a82",
+      "title": "rangular-runtime"
+    },
+    {
+      "id": "rangular/crates/rangular/README.md",
+      "path": "crates/rangular/README.md",
+      "product": "rangular",
+      "sha256": "67392da710a1c9daa3521cbe75f02e0ac3ac98a0363c0671b3d431c871c492f0",
+      "title": "rangular"
+    },
+    {
       "id": "rangular/demo-leptos/README.md",
       "path": "demo-leptos/README.md",
       "product": "rangular",
@@ -617,6 +680,314 @@
       "title": "rangular specification v0.1"
     },
     {
+      "id": "rangular/docs/api-rust/README.md",
+      "path": "docs/api-rust/README.md",
+      "product": "rangular",
+      "sha256": "8d04d2afc07877a9e0f3bb1a530e84f98fb01fa21a26b6032f0900a62bd9ff78",
+      "title": "Rust API documentation (rustdoc)"
+    },
+    {
+      "id": "serenade/crates/serenade-admin/README.md",
+      "path": "crates/serenade-admin/README.md",
+      "product": "serenade",
+      "sha256": "3224ee06bb4f9a1d75e6f1b27fffda510e788826b94742ee4deafae68ab9b754",
+      "title": "serenade-admin"
+    },
+    {
+      "id": "serenade/crates/serenade-bundle/README.md",
+      "path": "crates/serenade-bundle/README.md",
+      "product": "serenade",
+      "sha256": "588c461c398e1b8b263be72fcc8fb69bedabbcd019b734db4633e59e4df91d59",
+      "title": "serenade-bundle"
+    },
+    {
+      "id": "serenade/crates/serenade-cache/README.md",
+      "path": "crates/serenade-cache/README.md",
+      "product": "serenade",
+      "sha256": "f7474716007fb1435dfa8bf699a6fa97e259b4268ad9358c73b201247da4875c",
+      "title": "serenade-cache"
+    },
+    {
+      "id": "serenade/crates/serenade-cli/README.md",
+      "path": "crates/serenade-cli/README.md",
+      "product": "serenade",
+      "sha256": "1bc5a4d1525804feb43c1122ec5debf6fc63b003b390e2012fcc8b291523402b",
+      "title": "serenade-cli"
+    },
+    {
+      "id": "serenade/crates/serenade-cli/templates/app/README.md",
+      "path": "crates/serenade-cli/templates/app/README.md",
+      "product": "serenade",
+      "sha256": "3f674a696eb050862a91344dd5115328c47f0fbb437fe25e4cc859ecbc97f54b",
+      "title": "__PACKAGE_NAME__"
+    },
+    {
+      "id": "serenade/crates/serenade-component-host/README.md",
+      "path": "crates/serenade-component-host/README.md",
+      "product": "serenade",
+      "sha256": "51c5762c5a68f3161894fb9e27c7aef538405f62b317e2252fee6c77020ff47f",
+      "title": "serenade-component-host"
+    },
+    {
+      "id": "serenade/crates/serenade-config/README.md",
+      "path": "crates/serenade-config/README.md",
+      "product": "serenade",
+      "sha256": "e7f2eb0f0e34027706eb059a46ba69035d89e33518f58370807a000fc393d1bd",
+      "title": "serenade-config"
+    },
+    {
+      "id": "serenade/crates/serenade-console/README.md",
+      "path": "crates/serenade-console/README.md",
+      "product": "serenade",
+      "sha256": "171ad798ae20b07a6ce8b86be86a80e74cc8018e99195aa854e2cf733ef1e42a",
+      "title": "serenade-console"
+    },
+    {
+      "id": "serenade/crates/serenade-contracts/README.md",
+      "path": "crates/serenade-contracts/README.md",
+      "product": "serenade",
+      "sha256": "24f6b9f0122f8408534e0fc5566cc2bb71099fa6385195c9fd2255acafebc481",
+      "title": "serenade-contracts"
+    },
+    {
+      "id": "serenade/crates/serenade-di/README.md",
+      "path": "crates/serenade-di/README.md",
+      "product": "serenade",
+      "sha256": "1f2085a24b298eb082a6d575f0ebb069a6af143f1f7b0064ab9b6f1ef9b9e46f",
+      "title": "serenade-di"
+    },
+    {
+      "id": "serenade/crates/serenade-event/README.md",
+      "path": "crates/serenade-event/README.md",
+      "product": "serenade",
+      "sha256": "97abced78dc46ebb4b3e17407a97c8de1ceeabf2182ddc76288d3dfbabed126d",
+      "title": "serenade-event"
+    },
+    {
+      "id": "serenade/crates/serenade-expression/README.md",
+      "path": "crates/serenade-expression/README.md",
+      "product": "serenade",
+      "sha256": "e0e319f0a6ce0b6de9a22151f69fdc1e77e1a3cc097141ead16628ba58f1477c",
+      "title": "serenade-expression"
+    },
+    {
+      "id": "serenade/crates/serenade-filesystem/README.md",
+      "path": "crates/serenade-filesystem/README.md",
+      "product": "serenade",
+      "sha256": "192db644090e52854b7db39fe0322d8ac522b9c6e5fcfc0553a9255737755957",
+      "title": "serenade-filesystem"
+    },
+    {
+      "id": "serenade/crates/serenade-finder/README.md",
+      "path": "crates/serenade-finder/README.md",
+      "product": "serenade",
+      "sha256": "dd322800c413cdc664842ed38ea2bf8ba1b5865f07c0e170e9da1a1e9b11ea9b",
+      "title": "serenade-finder"
+    },
+    {
+      "id": "serenade/crates/serenade-form/README.md",
+      "path": "crates/serenade-form/README.md",
+      "product": "serenade",
+      "sha256": "d5dcab172471ca51e9814dc49cd7c765307c34a1b511fefdcf8da5c2211db4e2",
+      "title": "serenade-form"
+    },
+    {
+      "id": "serenade/crates/serenade-framework/README.md",
+      "path": "crates/serenade-framework/README.md",
+      "product": "serenade",
+      "sha256": "2fa58c5e1fe842d4db538706f47977230a2dd827aace7a5cb2fb1d52f251d803",
+      "title": "serenade-framework"
+    },
+    {
+      "id": "serenade/crates/serenade-http-actix/README.md",
+      "path": "crates/serenade-http-actix/README.md",
+      "product": "serenade",
+      "sha256": "22717ffc185d68873d387b7e5b59954ec0b8906fa6b9783fab8c82342a78d192",
+      "title": "serenade-http-actix"
+    },
+    {
+      "id": "serenade/crates/serenade-http-axum/README.md",
+      "path": "crates/serenade-http-axum/README.md",
+      "product": "serenade",
+      "sha256": "f9ca6068a3434756a0eb2fbaba4245eed67d7b04a0cffb5fa13bb8cd1fe0921c",
+      "title": "serenade-http-axum"
+    },
+    {
+      "id": "serenade/crates/serenade-http-client/README.md",
+      "path": "crates/serenade-http-client/README.md",
+      "product": "serenade",
+      "sha256": "831e2823e5bb0ee972c2a3acab2924442b54ef661459ebcb3623d66f6b66d162",
+      "title": "serenade-http-client"
+    },
+    {
+      "id": "serenade/crates/serenade-http/README.md",
+      "path": "crates/serenade-http/README.md",
+      "product": "serenade",
+      "sha256": "8620b28f3ea297f0b28388e0fc3e392290d1c18c6c25be04d0dd63bc16f67978",
+      "title": "serenade-http"
+    },
+    {
+      "id": "serenade/crates/serenade-kernel/README.md",
+      "path": "crates/serenade-kernel/README.md",
+      "product": "serenade",
+      "sha256": "ba312357669ef3536b98efc5bec12b0d6b6fb41b5b99de69182fc7c0f8eae495",
+      "title": "serenade-kernel"
+    },
+    {
+      "id": "serenade/crates/serenade-lock/README.md",
+      "path": "crates/serenade-lock/README.md",
+      "product": "serenade",
+      "sha256": "4bec6ff4e3793576c843220430f2afffc23ca7cd45a73e8539fb40bafeea9288",
+      "title": "serenade-lock"
+    },
+    {
+      "id": "serenade/crates/serenade-mailer/README.md",
+      "path": "crates/serenade-mailer/README.md",
+      "product": "serenade",
+      "sha256": "ce06391b017d9a5eec327e97e03687fac146b7d1a22fe12b529129538d2373e7",
+      "title": "serenade-mailer"
+    },
+    {
+      "id": "serenade/crates/serenade-messenger/README.md",
+      "path": "crates/serenade-messenger/README.md",
+      "product": "serenade",
+      "sha256": "11abc3438bd7d8e9ab4b0312ed2c9597073c30f8cbbd17b095b84688f1ebe3c1",
+      "title": "serenade-messenger"
+    },
+    {
+      "id": "serenade/crates/serenade-minify/README.md",
+      "path": "crates/serenade-minify/README.md",
+      "product": "serenade",
+      "sha256": "d3bd5c170b29d4c3ff62572b0c6bdf3ea8c612dcad284586a9da77462d56d5ad",
+      "title": "serenade-minify"
+    },
+    {
+      "id": "serenade/crates/serenade-notifier/README.md",
+      "path": "crates/serenade-notifier/README.md",
+      "product": "serenade",
+      "sha256": "6fe2f86646c66394717255300cc47503cd9a08d0978c7fa10db8ed13d8f8d2e5",
+      "title": "serenade-notifier"
+    },
+    {
+      "id": "serenade/crates/serenade-observability/README.md",
+      "path": "crates/serenade-observability/README.md",
+      "product": "serenade",
+      "sha256": "c12e6c65da4837ba4d3e9eec112b979693eeb21ce0a46f9696a62edcd1d2f4fe",
+      "title": "serenade-observability"
+    },
+    {
+      "id": "serenade/crates/serenade-openapi/README.md",
+      "path": "crates/serenade-openapi/README.md",
+      "product": "serenade",
+      "sha256": "40e34174e06934b5051388d861a8b49bcccdcaa7cfdab850e1414966af34a8f6",
+      "title": "serenade-openapi"
+    },
+    {
+      "id": "serenade/crates/serenade-process/README.md",
+      "path": "crates/serenade-process/README.md",
+      "product": "serenade",
+      "sha256": "67204a0c95e8d9ba5b872671646a85c06a673ba48f59ab56e34346d3b94a7cf4",
+      "title": "serenade-process"
+    },
+    {
+      "id": "serenade/crates/serenade-profiler/README.md",
+      "path": "crates/serenade-profiler/README.md",
+      "product": "serenade",
+      "sha256": "d27c40958b28b4b68c4e95d36b3ed2fe3536a26913e12999d974922730311cde",
+      "title": "serenade-profiler"
+    },
+    {
+      "id": "serenade/crates/serenade-rate-limiter/README.md",
+      "path": "crates/serenade-rate-limiter/README.md",
+      "product": "serenade",
+      "sha256": "5f9c4af1be9914a451909afcb535d3e0799f4d55e1365e8c8cb5b1d203d96c27",
+      "title": "serenade-rate-limiter"
+    },
+    {
+      "id": "serenade/crates/serenade-sandbox/README.md",
+      "path": "crates/serenade-sandbox/README.md",
+      "product": "serenade",
+      "sha256": "151f00d86d6be8b28e241f12ddf066910c5fc7a1a4205bee51435183696151e8",
+      "title": "serenade-sandbox"
+    },
+    {
+      "id": "serenade/crates/serenade-scheduler/README.md",
+      "path": "crates/serenade-scheduler/README.md",
+      "product": "serenade",
+      "sha256": "986a71967142d6eb0a03cbbf615faf193abe6a8a6026775a37b9c8e4d80bccd8",
+      "title": "serenade-scheduler"
+    },
+    {
+      "id": "serenade/crates/serenade-search/README.md",
+      "path": "crates/serenade-search/README.md",
+      "product": "serenade",
+      "sha256": "33456ec3e4496832913660ae1062549d4be27fcaa0b662df614773cc1d70ba00",
+      "title": "serenade-search"
+    },
+    {
+      "id": "serenade/crates/serenade-security/README.md",
+      "path": "crates/serenade-security/README.md",
+      "product": "serenade",
+      "sha256": "8f9a26c35f52c0b8c15841fd7e5ff06ded464e013ab82914d5471f9f17b66cd2",
+      "title": "serenade-security"
+    },
+    {
+      "id": "serenade/crates/serenade-serializer/README.md",
+      "path": "crates/serenade-serializer/README.md",
+      "product": "serenade",
+      "sha256": "f72ad4181c5c330cb5d5f765f9713eea04a1780946b568dba9f80bf302a3635c",
+      "title": "serenade-serializer"
+    },
+    {
+      "id": "serenade/crates/serenade-session/README.md",
+      "path": "crates/serenade-session/README.md",
+      "product": "serenade",
+      "sha256": "ab5c4554f4493b0f58410532128e83153598c3373b6bf0290b9e3dd9e6b060ff",
+      "title": "README.md"
+    },
+    {
+      "id": "serenade/crates/serenade-string/README.md",
+      "path": "crates/serenade-string/README.md",
+      "product": "serenade",
+      "sha256": "5113b9979e9d998dc56bf41d88f3ad18e49e5d29aec7fd541c27160c3bda9a93",
+      "title": "serenade-string"
+    },
+    {
+      "id": "serenade/crates/serenade-testing/README.md",
+      "path": "crates/serenade-testing/README.md",
+      "product": "serenade",
+      "sha256": "55a8d74b0903ee225cc7bded8fb52f73b8f8c44782a65ca89efe5bfddae4f30f",
+      "title": "serenade-testing"
+    },
+    {
+      "id": "serenade/crates/serenade-translation/README.md",
+      "path": "crates/serenade-translation/README.md",
+      "product": "serenade",
+      "sha256": "3b4a8a93cf71d2f81e685cead599dd3f3d5d001045347c8ed1e401a16c08abca",
+      "title": "serenade-translation"
+    },
+    {
+      "id": "serenade/crates/serenade-validator/README.md",
+      "path": "crates/serenade-validator/README.md",
+      "product": "serenade",
+      "sha256": "72071945eb729693c578aae59ad45e5f49d8359b07a17239f99c5b8fdac0a10a",
+      "title": "serenade-validator"
+    },
+    {
+      "id": "serenade/crates/serenade-view/README.md",
+      "path": "crates/serenade-view/README.md",
+      "product": "serenade",
+      "sha256": "2cdaa7878c0139694338710d9528023bc466380f3ee0a8ace3f1832f8ea405e0",
+      "title": "serenade-view"
+    },
+    {
+      "id": "serenade/crates/serenade-workflow/README.md",
+      "path": "crates/serenade-workflow/README.md",
+      "product": "serenade",
+      "sha256": "e525e49305bc2db9fdbb12d910cd5f639fc4c42538792985091fdc0342aab950",
+      "title": "serenade-workflow"
+    },
+    {
       "id": "serenade/docs-dev/ADMIN.md",
       "path": "docs-dev/ADMIN.md",
       "product": "serenade",
@@ -862,13 +1233,6 @@
       "title": "String / Inflector"
     },
     {
-      "id": "serenade/docs-dev/SUPPLY-CHAIN.md",
-      "path": "docs-dev/SUPPLY-CHAIN.md",
-      "product": "serenade",
-      "sha256": "5d556f276aa186d6c12a18c7674a3252d52d33537269c2b1b637b557102b1931",
-      "title": "Supply-chain checks"
-    },
-    {
       "id": "serenade/docs-dev/VIEW.md",
       "path": "docs-dev/VIEW.md",
       "product": "serenade",
@@ -909,6 +1273,13 @@
       "product": "serenade",
       "sha256": "a5da10a9da777026e0d19ef56210a48b776c84fbc1331ff4a7c8565124cb52c7",
       "title": "**Serenade**"
+    },
+    {
+      "id": "serenade/docs/api-rust/README.md",
+      "path": "docs/api-rust/README.md",
+      "product": "serenade",
+      "sha256": "9ff88b811ab1717cb2eff8a3ffbf2b7c6cf64bd83542460ae90fd1e1045213f1",
+      "title": "Rust API documentation (rustdoc)"
     },
     {
       "id": "serenade/examples/demo-app/README.md",
@@ -1324,6 +1695,13 @@
       "title": "main.rs"
     },
     {
+      "id": "serenade/guides/components/index.md",
+      "path": "docs/astro/src/content/docs/components/index.md",
+      "product": "serenade",
+      "sha256": "17ef317ea875860918fe0babd40b545371f0dc4707a8f843c72ac8f99098c3ba",
+      "title": "index.md"
+    },
+    {
       "id": "serenade/guides/concepts/architecture.md",
       "path": "docs/astro/src/content/docs/concepts/architecture.md",
       "product": "serenade",
@@ -1336,6 +1714,20 @@
       "product": "serenade",
       "sha256": "abec882738467ebd5e10e6308a60daec5eb729fa48c62a7c833c227978624e6c",
       "title": "bundles.md"
+    },
+    {
+      "id": "serenade/guides/concepts/index.md",
+      "path": "docs/astro/src/content/docs/concepts/index.md",
+      "product": "serenade",
+      "sha256": "e6b4aef42fbe91e4d42f6e420cdc69c517eda7489a9499954acfe16c2723aba0",
+      "title": "index.md"
+    },
+    {
+      "id": "serenade/guides/examples/index.md",
+      "path": "docs/astro/src/content/docs/examples/index.md",
+      "product": "serenade",
+      "sha256": "423b0c9d59cdd6294952107d82c0e2a646dea82bd0a7b7b36fc4b78b5cffcff8",
+      "title": "index.md"
     },
     {
       "id": "serenade/guides/first-steps/choose-your-mode.md",
@@ -1359,11 +1751,39 @@
       "title": "installation.md"
     },
     {
+      "id": "serenade/guides/how-to/agent-mcp.md",
+      "path": "docs/astro/src/content/docs/how-to/agent-mcp.md",
+      "product": "serenade",
+      "sha256": "1c97bf3325136590781be9f477cad018a150faf32f94f96dc456199092b8e197",
+      "title": "agent-mcp.md"
+    },
+    {
+      "id": "serenade/guides/how-to/index.md",
+      "path": "docs/astro/src/content/docs/how-to/index.md",
+      "product": "serenade",
+      "sha256": "5f99e04c903cbfd2051064c2777ae791f7415409b4a102420ac2653cc66e0f16",
+      "title": "index.md"
+    },
+    {
+      "id": "serenade/guides/index.mdx",
+      "path": "docs/astro/src/content/docs/index.mdx",
+      "product": "serenade",
+      "sha256": "b5b7385bd140aad4ba8cea0bd2ec12689341ec1424feb9c400600e901b94328a",
+      "title": "index.mdx"
+    },
+    {
       "id": "serenade/guides/reference/api-docs.md",
       "path": "docs/astro/src/content/docs/reference/api-docs.md",
       "product": "serenade",
       "sha256": "097cff16951d94817e34bef59124d3f72dd6f19d9bebc35582ad718e337b56fa",
       "title": "api-docs.md"
+    },
+    {
+      "id": "serenade/guides/reference/index.md",
+      "path": "docs/astro/src/content/docs/reference/index.md",
+      "product": "serenade",
+      "sha256": "7d32d991805dce9867c3a156ca2af526ff10fa4c92d88ec5f02cd5d14fdc1d82",
+      "title": "index.md"
     },
     {
       "id": "serenade/guides/tutorials/first-bundle-app.md",

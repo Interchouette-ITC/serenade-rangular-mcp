@@ -16,6 +16,8 @@ Maintainers can verify the package without uploading it using `make publish-chec
 publishes using the `CARGO_REGISTRY_TOKEN` secret in the `crates-io` environment.
 
 The binary uses the `serenade`, `rangular` or `all` profile (`all` by default).
+Local stdio exposes project actions: they can create files and run Cargo,
+including build scripts and tests. Use an MCP client that asks for approval.
 For a stdio client:
 
 ```json
@@ -54,6 +56,16 @@ a restart where the client supports it.
 - `search_docs`: search paths, titles, headings and source text.
 - `get_doc`: read a document or a section; large documents return section IDs.
   If a section is still too large, pass `offset: 0` and follow `next_offset`.
+- `get_coding_guide`: actionable, source-linked workflows for app scaffolding,
+  HTML, SPA, SSG, Universal, Rangular components and combining both projects.
+- `inspect_cargo_manifest`: inspect supplied manifest text for product dependencies,
+  aliases, features, workspace declarations and target-specific dependencies.
+  It does not read files or resolve Cargo's dependency graph.
+- `scaffold_serenade_app` (stdio only): run the installed `serenade new` CLI
+  in an existing absolute parent directory without overwriting a destination.
+- `run_cargo_task` (stdio only): run `cargo check`, `build` or `test` in an
+  absolute project directory, optionally selecting a package and features.
+  Cargo can execute project-owned build scripts and tests and download dependencies.
 - `validate_rangular_template`: parse component or head template text and
   report up to 100 RANG diagnostics, with the total count and a truncation flag.
   It uses the published crates.io parser, which may differ from the development
@@ -65,8 +77,13 @@ Each result identifies the product, documented version, source revision and
 original source path. Both products' documentation tracks their development
 branches and may describe unreleased changes. The corpus records the sources
 embedded when it was last refreshed; it does not fetch updates at runtime.
-Agents run the existing `serenade`
-CLI, `serenade-trunk` and Cargo themselves under their normal permissions.
+It includes framework and template documentation, authored Astro pages and
+crate READMEs, excluding repository administration such as contribution,
+release and security-reporting policies. Astro's generated guide pages come from the included
+`docs-dev` sources; the crate catalog is represented by the crate READMEs.
+Agents can use the stdio actions for scaffolding and Cargo tasks, or run the
+existing `serenade` CLI, `serenade-trunk` and Cargo themselves under their
+normal permissions.
 The corpus includes text source, configuration and guides for the Serenade
 HTML, SPA, SSG and Universal examples and the Rangular Leptos and Tauri demos.
 Example Cargo manifests and binary assets are not embedded. Use the original

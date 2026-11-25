@@ -11,26 +11,6 @@ use flate2::read::GzDecoder;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 
-const SERENADE_PATHS: &[&str] = &[
-    "docs-dev",
-    "docs/README.md",
-    "docs/CHANGELOG.md",
-    "docs/astro/src/content/docs/first-steps",
-    "docs/astro/src/content/docs/tutorials",
-    "docs/astro/src/content/docs/concepts/architecture.md",
-    "docs/astro/src/content/docs/concepts/bundles.md",
-    "docs/astro/src/content/docs/reference/api-docs.md",
-    "examples",
-];
-const RANGULAR_PATHS: &[&str] = &[
-    "docs/README.md",
-    "docs/SPEC.md",
-    "docs/OVERVIEW.md",
-    "docs/CHANGELOG.md",
-    "demo-leptos",
-    "demo-tauri",
-];
-
 fn fetch(url: &str) -> anyhow::Result<Vec<u8>> {
     let output = Command::new("curl")
         .args([
@@ -102,6 +82,50 @@ fn is_example_manifest(path: &str) -> bool {
         && Path::new(path)
             .file_name()
             .is_some_and(|name| name == "Cargo.toml")
+}
+
+fn include_source(product: &str, path: &str) -> bool {
+    let source_path = Path::new(path);
+    let name = source_path.file_name().and_then(|value| value.to_str());
+    let repository_administration = matches!(
+        name,
+        Some(
+            "CODE_OF_CONDUCT.md"
+                | "CONTRIBUTING.md"
+                | "RELEASING.md"
+                | "SUPPLY-CHAIN.md"
+                | "pull_request_template.md"
+        )
+    ) || (name == Some("SECURITY.md")
+        && source_path.parent() == Some(Path::new("docs")))
+        || path.starts_with("docs/brand/");
+    if repository_administration {
+        return false;
+    }
+    let extension = source_path.extension().and_then(|value| value.to_str());
+    let markdown = matches!(extension, Some("md" | "mdx"));
+    let crate_readme = path.starts_with("crates/") && path.ends_with("/README.md");
+    let documentation = match product {
+        "serenade" => {
+            path.starts_with("docs-dev/")
+                || path.starts_with("docs/astro/src/content/docs/")
+                || (path.starts_with("docs/") && !path.starts_with("docs/astro/"))
+        }
+        "rangular" => path.starts_with("docs/"),
+        _ => false,
+    };
+    let example = match product {
+        "serenade" => path.starts_with("examples/"),
+        "rangular" => path.starts_with("demo-leptos/") || path.starts_with("demo-tauri/"),
+        _ => false,
+    };
+    (markdown && (documentation || crate_readme))
+        || (example
+            && !is_example_manifest(path)
+            && matches!(
+                extension,
+                Some("md" | "rs" | "html" | "scss" | "css" | "js" | "json" | "toml")
+            ))
 }
 
 fn check_published_sources(root: &Path, revision: &str, version: &str) -> anyhow::Result<()> {
@@ -180,7 +204,6 @@ fn refresh_product(
     product: &str,
     repository: &str,
     source: &Source,
-    paths: &[&str],
     inventory: &mut Inventory,
 ) -> anyhow::Result<()> {
     let url = format!(
@@ -214,22 +237,7 @@ fn refresh_product(
             );
             continue;
         }
-        if !paths.iter().any(|prefix| {
-            path == *prefix
-                || path
-                    .strip_prefix(*prefix)
-                    .is_some_and(|suffix| suffix.starts_with('/'))
-        }) {
-            continue;
-        }
-        if is_example_manifest(path) {
-            continue;
-        }
-        let extension = Path::new(path).extension().and_then(|value| value.to_str());
-        if !matches!(
-            extension,
-            Some("md" | "rs" | "html" | "scss" | "css" | "js" | "json" | "toml")
-        ) {
+        if !include_source(product, path) {
             continue;
         }
         let mut data = Vec::new();
@@ -305,20 +313,8 @@ fn main() -> anyhow::Result<()> {
     update_parser(root, version)?;
     check_published_sources(root, &parser_release.revision, version)?;
     let mut inventory = Inventory::default();
-    refresh_product(
-        "serenade",
-        "Serenade",
-        &serenade,
-        SERENADE_PATHS,
-        &mut inventory,
-    )?;
-    refresh_product(
-        "rangular",
-        "rangular",
-        &rangular,
-        RANGULAR_PATHS,
-        &mut inventory,
-    )?;
+    refresh_product("serenade", "Serenade", &serenade, &mut inventory)?;
+    refresh_product("rangular", "rangular", &rangular, &mut inventory)?;
     let Inventory {
         products,
         mut documents,
@@ -365,7 +361,7 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_example_manifest, update_parser};
+    use super::{include_source, is_example_manifest, update_parser};
     use std::{fs, path::Path};
 
     #[test]
@@ -375,6 +371,46 @@ mod tests {
         ));
         assert!(is_example_manifest("demo-leptos/Cargo.toml"));
         assert!(!is_example_manifest("examples/demo-app/src/main.rs"));
+    }
+
+    #[test]
+    fn includes_documentation_trees_and_crate_guides() {
+        for (product, path) in [
+            ("serenade", "docs/astro/src/content/docs/index.mdx"),
+            (
+                "serenade",
+                "docs/astro/src/content/docs/how-to/agent-mcp.md",
+            ),
+            ("serenade", "docs-dev/SECURITY.md"),
+            ("serenade", "docs-dev/FORMS.md"),
+            ("serenade", "crates/serenade-form/README.md"),
+            ("rangular", "docs/SPEC.md"),
+            ("rangular", "crates/rangular-build/README.md"),
+        ] {
+            assert!(include_source(product, path), "{product}: {path}");
+        }
+        assert!(!include_source("serenade", "docs/astro/package.json"));
+        assert!(!include_source("rangular", "demo-leptos/Cargo.toml"));
+    }
+
+    #[test]
+    fn excludes_repository_administration() {
+        for product in ["serenade", "rangular"] {
+            for directory in ["docs", "docs/nested", "docs-dev", "examples"] {
+                for name in [
+                    "CODE_OF_CONDUCT.md",
+                    "CONTRIBUTING.md",
+                    "RELEASING.md",
+                    "SUPPLY-CHAIN.md",
+                    "pull_request_template.md",
+                ] {
+                    let path = format!("{directory}/{name}");
+                    assert!(!include_source(product, &path), "{product}: {path}");
+                }
+            }
+            assert!(!include_source(product, "docs/SECURITY.md"));
+            assert!(!include_source(product, "docs/brand/README.md"));
+        }
     }
 
     #[test]

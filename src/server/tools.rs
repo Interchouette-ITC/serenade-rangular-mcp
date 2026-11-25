@@ -7,7 +7,7 @@ use rmcp::{
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::DocsServer;
+use super::{DocsServer, guidance, local, manifest};
 use crate::corpus::{self, Document};
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -24,7 +24,7 @@ pub struct ListArgs {
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct SearchArgs {
-    /// Search terms; all terms must occur.
+    /// Keywords or a natural-language question.
     query: String,
     /// Optional product: serenade or rangular.
     product: Option<String>,
@@ -50,6 +50,18 @@ pub struct ValidateArgs {
     kind: Option<String>,
 }
 
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct GuideArgs {
+    /// The application or component workflow to build.
+    task: guidance::CodingTask,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct ManifestArgs {
+    /// Contents of a Cargo.toml, at most 64,000 bytes.
+    manifest: String,
+}
+
 fn limit(value: Option<usize>) -> Result<usize, ErrorData> {
     let value = value.unwrap_or(20);
     if !(1..=50).contains(&value) {
@@ -67,17 +79,102 @@ fn result(value: &impl Serialize) -> Result<CallToolResult, ErrorData> {
     Ok(CallToolResult::success(vec![ContentBlock::text(text)]))
 }
 
+fn command_result(success: bool, value: &impl Serialize) -> Result<CallToolResult, ErrorData> {
+    let text = serde_json::to_string(value)
+        .map_err(|error| ErrorData::internal_error(error.to_string(), None))?;
+    Ok(if success {
+        CallToolResult::success(vec![ContentBlock::text(text)])
+    } else {
+        CallToolResult::error(vec![ContentBlock::text(text)])
+    })
+}
+
 fn snippet(doc: &Document, terms: &[String]) -> String {
     let source = corpus::text(doc);
     let line = source
         .lines()
-        .find(|line| terms.iter().any(|term| line.to_lowercase().contains(term)))
+        .find(|line| {
+            let line = line.to_lowercase();
+            terms.iter().any(|term| contains_term(&line, term))
+        })
         .unwrap_or("");
     line.chars().take(240).collect()
 }
 
+fn search_variants(term: &str) -> &[&str] {
+    match term {
+        "website" | "websites" => &["website", "web", "front", "html", "spa", "ssg"],
+        _ => &[],
+    }
+}
+
+fn contains_term(text: &str, term: &str) -> bool {
+    text.contains(term)
+        || search_variants(term)
+            .iter()
+            .any(|variant| text.contains(variant))
+}
+
 #[tool_router(vis = "pub(super)")]
 impl DocsServer {
+    #[tool(
+        description = "Create a new Serenade application using the installed serenade CLI in an existing absolute local directory. Does not overwrite an existing destination. Stdio only.",
+        annotations(read_only_hint = false)
+    )]
+    async fn scaffold_serenade_app(
+        &self,
+        Parameters(args): Parameters<local::ScaffoldArgs>,
+    ) -> Result<CallToolResult, ErrorData> {
+        if !self.local_actions || !self.profile.includes("serenade") {
+            return Err(ErrorData::invalid_params(
+                "local Serenade actions are disabled",
+                None,
+            ));
+        }
+        let (success, output) = local::scaffold(args).await?;
+        command_result(success, &output)
+    }
+
+    #[tool(
+        description = "Run Cargo check, build, or test in a supplied absolute local project directory. Cargo may execute project build scripts and tests. Stdio only.",
+        annotations(read_only_hint = false)
+    )]
+    async fn run_cargo_task(
+        &self,
+        Parameters(args): Parameters<local::CargoArgs>,
+    ) -> Result<CallToolResult, ErrorData> {
+        if !self.local_actions {
+            return Err(ErrorData::invalid_params(
+                "local actions are disabled",
+                None,
+            ));
+        }
+        let (success, output) = local::cargo(args).await?;
+        command_result(success, &output)
+    }
+
+    #[tool(
+        description = "Get actionable, source-backed steps for creating a Serenade app, choosing a web mode, or building a Rangular component.",
+        annotations(read_only_hint = true)
+    )]
+    async fn get_coding_guide(
+        &self,
+        Parameters(args): Parameters<GuideArgs>,
+    ) -> Result<CallToolResult, ErrorData> {
+        result(&guidance::guide(args.task, self.profile)?)
+    }
+
+    #[tool(
+        description = "Inspect supplied Cargo manifest text for Serenade and Rangular dependencies, features, aliases and target scopes. Does not read files or resolve the Cargo graph.",
+        annotations(read_only_hint = true)
+    )]
+    async fn inspect_cargo_manifest(
+        &self,
+        Parameters(args): Parameters<ManifestArgs>,
+    ) -> Result<CallToolResult, ErrorData> {
+        result(&manifest::inspect(&args.manifest, self.profile)?)
+    }
+
     #[tool(
         description = "List versioned Serenade or Rangular documentation and examples. Use the returned ID with get_doc.",
         annotations(read_only_hint = true)
@@ -119,7 +216,7 @@ impl DocsServer {
     }
 
     #[tool(
-        description = "Search embedded Serenade and Rangular guides and examples by path and content. All search terms must match; retrieve full text with get_doc.",
+        description = "Search embedded Serenade and Rangular guides and examples by keywords or natural-language question; retrieve full text with get_doc.",
         annotations(read_only_hint = true)
     )]
     async fn search_docs(
@@ -134,45 +231,80 @@ impl DocsServer {
                 None,
             ));
         }
-        let terms: Vec<String> = args
+        let all_terms: Vec<String> = args
             .query
             .split_whitespace()
-            .map(str::to_lowercase)
+            .map(|term| {
+                term.trim_matches(|c: char| !c.is_alphanumeric() && c != '-' && c != '_')
+                    .to_lowercase()
+            })
+            .filter(|term| !term.is_empty())
             .collect();
-        let mut matches: Vec<_> =
-            corpus::manifest()
-                .documents
-                .iter()
-                .filter(|doc| self.profile.includes(&doc.product))
-                .filter(|doc| product.is_none_or(|value| doc.product == value))
-                .filter_map(|doc| {
-                    let title = doc.title.to_lowercase();
-                    let path = doc.path.to_lowercase();
-                    let text = corpus::text(doc).to_lowercase();
-                    if !terms.iter().all(|term| {
-                        title.contains(term) || path.contains(term) || text.contains(term)
-                    }) {
-                        return None;
-                    }
-                    let score: usize = terms
+        let stop_words = [
+            "a", "an", "and", "can", "do", "for", "how", "i", "in", "is", "my", "of", "on",
+            "please", "the", "to", "using", "what", "with",
+        ];
+        let mut terms: Vec<_> = all_terms
+            .iter()
+            .filter(|term| !stop_words.contains(&term.as_str()))
+            .cloned()
+            .collect();
+        if terms.len() > 1 {
+            terms.retain(|term| term != "serenade" && term != "rangular");
+        }
+        if terms.is_empty() {
+            terms = all_terms;
+        }
+        terms.sort();
+        terms.dedup();
+        if terms.is_empty() {
+            return Err(ErrorData::invalid_params(
+                "query must contain searchable text",
+                None,
+            ));
+        }
+        let mut matches: Vec<_> = corpus::manifest()
+            .documents
+            .iter()
+            .filter(|doc| self.profile.includes(&doc.product))
+            .filter(|doc| product.is_none_or(|value| doc.product == value))
+            .filter_map(|doc| {
+                let title = doc.title.to_lowercase();
+                let path = doc.path.to_lowercase();
+                let text = corpus::text(doc).to_lowercase();
+                let matching: Vec<_> = terms
+                    .iter()
+                    .filter(|term| {
+                        contains_term(&title, term)
+                            || contains_term(&path, term)
+                            || contains_term(&text, term)
+                    })
+                    .collect();
+                if matching.is_empty() {
+                    return None;
+                }
+                let score: usize = matching.len() * 100
+                    + matching
                         .iter()
                         .map(|term| {
-                            if title.contains(term) {
+                            let weight = if term.as_str() == "build" { 1 } else { 4 };
+                            let score = if contains_term(&title, term) {
                                 10
-                            } else if path.contains(term) {
+                            } else if contains_term(&path, term) {
                                 8
                             } else if corpus::text(doc).lines().any(|line| {
-                                line.starts_with('#') && line.to_lowercase().contains(term)
+                                line.starts_with('#') && contains_term(&line.to_lowercase(), term)
                             }) {
                                 5
                             } else {
                                 1
-                            }
+                            };
+                            score * weight
                         })
-                        .sum();
-                    Some((score, doc))
-                })
-                .collect();
+                        .sum::<usize>();
+                Some((score, doc))
+            })
+            .collect();
         matches.sort_by(|left, right| right.0.cmp(&left.0).then(left.1.id.cmp(&right.1.id)));
         let hits: Vec<_> = matches.into_iter().take(limit).map(|(score, doc)| {
             serde_json::json!({"document": corpus::entry(doc), "score": score, "snippet": snippet(doc, &terms)})

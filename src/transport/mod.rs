@@ -28,6 +28,7 @@ pub async fn http(
     address: SocketAddr,
     hosts: Vec<String>,
 ) -> anyhow::Result<()> {
+    let server = server.read_only();
     let mut config = StreamableHttpServerConfig::default()
         .with_allowed_hosts(hosts)
         .enforce_origin_validation();

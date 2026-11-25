@@ -37,9 +37,10 @@ async fn main() -> anyhow::Result<()> {
         .with_writer(std::io::stderr)
         .init();
     let args = Args::parse();
-    let server = DocsServer::new(args.profile);
     match args.transport {
-        Transport::Stdio => transport::stdio(server).await,
+        Transport::Stdio => {
+            transport::stdio(DocsServer::with_local_actions(args.profile, true)).await
+        }
         Transport::Http => {
             if !args.bind.is_loopback() && args.allowed_hosts.is_empty() {
                 anyhow::bail!("non-loopback HTTP requires --allowed-hosts or MCP_ALLOWED_HOSTS");
@@ -50,7 +51,12 @@ async fn main() -> anyhow::Result<()> {
                 "::1".to_owned(),
             ];
             hosts.extend(args.allowed_hosts);
-            transport::http(server, SocketAddr::new(args.bind, args.port), hosts).await
+            transport::http(
+                DocsServer::new(args.profile),
+                SocketAddr::new(args.bind, args.port),
+                hosts,
+            )
+            .await
         }
     }
 }

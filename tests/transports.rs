@@ -35,7 +35,7 @@ async fn call(client: &Peer<RoleClient>, name: &str, args: Value) -> anyhow::Res
     Ok(serde_json::from_str(&text.text)?)
 }
 
-async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
+async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<String>> {
     let mut names: Vec<_> = client
         .list_all_tools()
         .await?
@@ -43,15 +43,19 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
         .map(|tool| tool.name.to_string())
         .collect();
     names.sort();
-    assert_eq!(
-        names,
-        [
-            "get_doc",
-            "list_docs",
-            "search_docs",
-            "validate_rangular_template"
-        ]
-    );
+    let mut expected = vec![
+        "get_coding_guide",
+        "get_doc",
+        "inspect_cargo_manifest",
+        "list_docs",
+        "search_docs",
+        "validate_rangular_template",
+    ];
+    if local {
+        expected.extend(["run_cargo_task", "scaffold_serenade_app"]);
+        expected.sort();
+    }
+    assert_eq!(names, expected);
 
     let search = call(client, "search_docs", json!({"query":"serenade-trunk"})).await?;
     assert!(
@@ -71,6 +75,98 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
     )
     .await?;
     assert!(!rangular["items"].as_array().unwrap().is_empty());
+    let natural = call(
+        client,
+        "search_docs",
+        json!({"query":"how to build a website with Serenade","product":"serenade","limit":10}),
+    )
+    .await?;
+    assert!(
+        natural["items"]
+            .as_array()
+            .context("natural language results")?
+            .iter()
+            .any(|hit| {
+                let id = hit["document"]["id"].as_str().unwrap_or("");
+                id.contains("FRONT-MODES") || id.contains("choose-your-mode")
+            })
+    );
+    for (task, action, source) in [
+        ("create_app", "serenade new", "serenade/docs-dev/RECIPES.md"),
+        ("html", "make html", "serenade/examples/demo-html/README.md"),
+        (
+            "spa",
+            "make spa",
+            "serenade/examples/demo-monorepo/apps/demo-spa/src/main.rs",
+        ),
+        (
+            "ssg",
+            "make ssg",
+            "serenade/examples/demo-monorepo/apps/demo-ssg/src/bin/prerender.rs",
+        ),
+        (
+            "universal",
+            "make universal",
+            "serenade/examples/demo-universal/README.md",
+        ),
+        (
+            "rangular_component",
+            "rangular_build::build",
+            "rangular/crates/rangular/README.md",
+        ),
+        (
+            "rangular_serenade",
+            "ManagedHead",
+            "serenade/docs-dev/VIEW.md",
+        ),
+    ] {
+        let guide = call(client, "get_coding_guide", json!({"task": task})).await?;
+        assert!(
+            guide["steps"]
+                .as_array()
+                .context("guide steps")?
+                .iter()
+                .any(|step| { step.as_str().is_some_and(|text| text.contains(action)) })
+        );
+        assert!(
+            guide["sources"]
+                .as_array()
+                .context("guide sources")?
+                .iter()
+                .any(|doc| { doc["id"] == source && doc["source_url"].as_str().is_some() })
+        );
+    }
+    let inspection = call(
+        client,
+        "inspect_cargo_manifest",
+        json!({"manifest": "[package]\nname = 'app'\nversion = '0.1.0'\n[dependencies]\nui = { package = 'rangular', version = '1', features = ['x'] }\nserenade-view = { workspace = true }\n[target.'cfg(target_arch = \"wasm32\")'.build-dependencies]\nrangular-build = '1'\n"}),
+    ).await?;
+    assert_eq!(inspection["package"], "app");
+    let dependencies = inspection["dependencies"]
+        .as_array()
+        .context("dependencies")?;
+    assert!(dependencies.iter().any(|dep| dep["alias"] == "ui"
+        && dep["package"] == "rangular"
+        && dep["declaration"]["features"][0] == "x"));
+    assert!(dependencies.iter().any(|dep| dep["package"] == "serenade-view" && dep["declaration"]["workspace"] == true));
+    assert!(dependencies.iter().any(|dep| {
+        dep["package"] == "rangular-build"
+            && dep["scope"]
+                .as_str()
+                .unwrap()
+                .contains("build-dependencies")
+    }));
+    for id in [
+        "serenade/guides/how-to/agent-mcp.md",
+        "serenade/guides/concepts/index.md",
+        "serenade/guides/index.mdx",
+        "serenade/crates/serenade-form/README.md",
+        "rangular/docs/SPEC.md",
+        "rangular/crates/rangular-build/README.md",
+    ] {
+        let doc = call(client, "get_doc", json!({"id": id})).await?;
+        assert_eq!(doc["document"]["id"], id);
+    }
     let first_page = call(client, "list_docs", json!({"limit":1})).await?;
     let next_page = call(
         client,
@@ -227,6 +323,7 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
     for (name, args) in [
         ("search_docs", json!({"query":" "})),
         ("list_docs", json!({"limit":51})),
+        ("inspect_cargo_manifest", json!({"manifest":"[broken"})),
         (
             "validate_rangular_template",
             json!({"source":"", "kind":"unknown"}),
@@ -257,6 +354,30 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
             .iter()
             .any(|resource| resource.uri == "docs://rangular/docs/SPEC.md")
     );
+    let repository_names = [
+        "pull_request_template.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        "RELEASING.md",
+        "SUPPLY-CHAIN.md",
+    ];
+    assert!(resources.iter().all(|resource| {
+        let name = resource.uri.rsplit('/').next().unwrap_or("");
+        !repository_names.contains(&name)
+    }));
+    assert!(
+        client
+            .call_tool(
+                CallToolRequestParams::new("get_doc").with_arguments(
+                    json!({"id": format!("serenade/docs/{}", repository_names[0])})
+                        .as_object()
+                        .unwrap()
+                        .clone()
+                )
+            )
+            .await
+            .is_err()
+    );
     client
         .read_resource(ReadResourceRequestParams::new(
             "docs://serenade/docs-dev/RECIPES.md",
@@ -280,7 +401,7 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
     let mut command = Command::new(binary);
     command.current_dir(std::env::temp_dir());
     let stdio_client = ().serve(TokioChildProcess::new(command)?).await?;
-    let stdio_names = exercise(stdio_client.peer()).await?;
+    let stdio_names = exercise(stdio_client.peer(), true).await?;
     stdio_client.cancel().await?;
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
@@ -294,12 +415,18 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
     wait_ready(address, &mut process).await?;
     let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
     let http_client = ().serve(transport).await?;
-    let http_names = exercise(http_client.peer()).await?;
-    assert_eq!(stdio_names, http_names);
+    let http_names = exercise(http_client.peer(), false).await?;
+    assert_eq!(
+        stdio_names
+            .iter()
+            .filter(|name| *name != "run_cargo_task" && *name != "scaffold_serenade_app")
+            .collect::<Vec<_>>(),
+        http_names.iter().collect::<Vec<_>>()
+    );
     http_client.cancel().await?;
     let reconnect = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
     let reconnected = ().serve(reconnect).await?;
-    assert_eq!(reconnected.list_all_tools().await?.len(), 4);
+    assert_eq!(reconnected.list_all_tools().await?.len(), 6);
     reconnected.cancel().await?;
     assert_eq!(http_status(address, "attacker.example", None, "{}")?, 403);
     assert_eq!(
@@ -320,10 +447,137 @@ async fn stdio_and_http_serve_the_same_documentation_contract() -> anyhow::Resul
     wait_ready(address, &mut restarted).await?;
     let transport = StreamableHttpClientTransport::from_uri(format!("http://{address}/mcp"));
     let client = ().serve(transport).await?;
-    assert_eq!(client.list_all_tools().await?.len(), 4);
+    assert_eq!(client.list_all_tools().await?.len(), 6);
     client.cancel().await?;
     restarted.kill().await?;
     restarted.wait().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn local_cargo_actions_run_and_report_failures() -> anyhow::Result<()> {
+    let project = tempfile::tempdir()?;
+    std::fs::create_dir(project.path().join("src"))?;
+    std::fs::write(
+        project.path().join("Cargo.toml"),
+        "[package]\nname = 'mcp-fixture'\nversion = '0.1.0'\nedition = '2024'\n[features]\nextra = []\n",
+    )?;
+    std::fs::write(
+        project.path().join("src/lib.rs"),
+        "pub fn answer() -> u8 { 42 }\n",
+    )?;
+    let mut command = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"));
+    command.env("CARGO_NET_OFFLINE", "true");
+    let client = ().serve(TokioChildProcess::new(command)?).await?;
+    let args = json!({
+        "directory": project.path(),
+        "task": "test",
+        "package": "mcp-fixture",
+        "features": ["extra"]
+    });
+    let output = call(client.peer(), "run_cargo_task", args.clone()).await?;
+    assert_eq!(output["success"], true);
+    assert_eq!(output["exit_code"], 0);
+    assert!(
+        output["stdout"]
+            .as_str()
+            .unwrap()
+            .contains("test result: ok")
+    );
+
+    std::fs::write(
+        project.path().join("src/lib.rs"),
+        "compile_error!(\"fixture error\");\n",
+    )?;
+    let failed = client
+        .call_tool(
+            CallToolRequestParams::new("run_cargo_task")
+                .with_arguments(args.as_object().unwrap().clone()),
+        )
+        .await?;
+    assert_eq!(failed.is_error, Some(true));
+    let text = &failed.content[0].as_text().context("failure text")?.text;
+    let failure: Value = serde_json::from_str(text)?;
+    assert_eq!(failure["success"], false);
+    assert!(
+        failure["stderr"]
+            .as_str()
+            .unwrap()
+            .contains("fixture error")
+    );
+    for args in [
+        json!({"directory":"relative", "task":"test"}),
+        json!({"directory":project.path(), "task":"test", "features":["--help"]}),
+    ] {
+        assert!(
+            client
+                .call_tool(
+                    CallToolRequestParams::new("run_cargo_task")
+                        .with_arguments(args.as_object().unwrap().clone())
+                )
+                .await
+                .is_err()
+        );
+    }
+    let existing = client
+        .call_tool(
+            CallToolRequestParams::new("scaffold_serenade_app").with_arguments(
+                json!({"directory":project.path(), "name":"src"})
+                    .as_object()
+                    .unwrap()
+                    .clone(),
+            ),
+        )
+        .await;
+    assert!(existing.is_err());
+    client.cancel().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn http_removes_local_actions_even_when_enabled_by_caller() -> anyhow::Result<()> {
+    use serenade_rangular_mcp::{
+        server::{DocsServer, Profile},
+        transport,
+    };
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    drop(listener);
+    let server = tokio::spawn(transport::http(
+        DocsServer::with_local_actions(Profile::All, true),
+        address,
+        vec!["127.0.0.1".to_owned()],
+    ));
+    tokio::time::timeout(Duration::from_secs(15), async {
+        while TcpStream::connect(address).await.is_err() {
+            sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("HTTP server did not start")?;
+    let client = ()
+        .serve(StreamableHttpClientTransport::from_uri(format!(
+            "http://{address}/mcp"
+        )))
+        .await?;
+    let names = client.list_all_tools().await?;
+    for name in ["run_cargo_task", "scaffold_serenade_app"] {
+        assert!(!names.iter().any(|tool| tool.name == name));
+        let response = client
+            .call_tool(
+                CallToolRequestParams::new(name).with_arguments(
+                    json!({"directory":"/", "task":"check", "name":"test"})
+                        .as_object()
+                        .unwrap()
+                        .clone(),
+                ),
+            )
+            .await;
+        assert!(response.is_err() || response.unwrap().is_error == Some(true));
+    }
+    client.cancel().await?;
+    server.abort();
     Ok(())
 }
 
@@ -357,13 +611,18 @@ async fn serenade_profile_hides_rangular_tools_and_content() -> anyhow::Result<(
         .args(["--profile", "serenade"])
         .current_dir(std::env::temp_dir());
     let client = ().serve(TokioChildProcess::new(command)?).await?;
+    let tools = client.list_all_tools().await?;
     assert!(
-        !client
-            .list_all_tools()
-            .await?
+        !tools
             .iter()
             .any(|tool| tool.name == "validate_rangular_template")
     );
+    assert!(
+        tools
+            .iter()
+            .any(|tool| tool.name == "scaffold_serenade_app")
+    );
+    assert!(tools.iter().any(|tool| tool.name == "run_cargo_task"));
     assert!(
         client
             .list_all_resources()
@@ -371,6 +630,27 @@ async fn serenade_profile_hides_rangular_tools_and_content() -> anyhow::Result<(
             .iter()
             .all(|resource| resource.uri.starts_with("docs://serenade/"))
     );
+    assert!(
+        client
+            .call_tool(
+                CallToolRequestParams::new("get_coding_guide").with_arguments(
+                    json!({"task":"rangular_component"})
+                        .as_object()
+                        .unwrap()
+                        .clone()
+                )
+            )
+            .await
+            .is_err()
+    );
+    let inspected = call(
+        client.peer(),
+        "inspect_cargo_manifest",
+        json!({"manifest":"[dependencies]\nrangular = '1'\nserenade-view = '1'"}),
+    )
+    .await?;
+    assert_eq!(inspected["dependencies"].as_array().unwrap().len(), 1);
+    assert_eq!(inspected["dependencies"][0]["package"], "serenade-view");
     client.cancel().await?;
     Ok(())
 }
@@ -380,6 +660,13 @@ async fn rangular_profile_hides_serenade_content() -> anyhow::Result<()> {
     let mut command = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"));
     command.args(["--profile", "rangular"]);
     let client = ().serve(TokioChildProcess::new(command)?).await?;
+    let tools = client.list_all_tools().await?;
+    assert!(
+        !tools
+            .iter()
+            .any(|tool| tool.name == "scaffold_serenade_app")
+    );
+    assert!(tools.iter().any(|tool| tool.name == "run_cargo_task"));
     let resources = client.list_all_resources().await?;
     assert!(!resources.is_empty());
     assert!(
@@ -392,6 +679,19 @@ async fn rangular_profile_hides_serenade_content() -> anyhow::Result<()> {
             .call_tool(
                 CallToolRequestParams::new("list_docs")
                     .with_arguments(json!({"product":"serenade"}).as_object().unwrap().clone())
+            )
+            .await
+            .is_err()
+    );
+    assert!(
+        client
+            .call_tool(
+                CallToolRequestParams::new("get_coding_guide").with_arguments(
+                    json!({"task":"rangular_serenade"})
+                        .as_object()
+                        .unwrap()
+                        .clone()
+                )
             )
             .await
             .is_err()
