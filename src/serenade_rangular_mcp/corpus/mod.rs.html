@@ -255,7 +255,7 @@
 <a href=#255 id=255 data-nosnippet>255</a>
 <a href=#256 id=256 data-nosnippet>256</a>    <span class="attr">#[test]
 <a href=#257 id=257 data-nosnippet>257</a>    </span><span class="kw">fn </span>headings_ignore_code_fences_and_disambiguate_duplicates() {
-<a href=#258 id=258 data-nosnippet>258</a>        <span class="kw">let </span>source = <span class="string">"# First\n```\n# fake\n```\n## First\n## First\n"</span>;
+<a href=#258 id=258 data-nosnippet>258</a>        <span class="kw">let </span>source = <span class="string">"# First\n```\n~~~\n# fake\n```\n## First\n## First\n"</span>;
 <a href=#259 id=259 data-nosnippet>259</a>        <span class="kw">let </span>headings = sections(source);
 <a href=#260 id=260 data-nosnippet>260</a>        <span class="macro">assert_eq!</span>(
 <a href=#261 id=261 data-nosnippet>261</a>            headings.iter().map(|h| h.id.as_str()).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
