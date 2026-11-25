@@ -1,0 +1,559 @@
+{
+  "documents": [
+    {
+      "id": "serenade/docs-dev/ADMIN.md",
+      "path": "docs-dev/ADMIN.md",
+      "product": "serenade",
+      "sha256": "9185e9db4588b86de9d152b8554aefceaa83f0a4f0a65da803ce48ebcdf2611f",
+      "title": "Admin CRUD (`serenade-admin`)"
+    },
+    {
+      "id": "serenade/docs-dev/BUNDLES.md",
+      "path": "docs-dev/BUNDLES.md",
+      "product": "serenade",
+      "sha256": "d33f0e2aa34e79ef93ecc350c3e4bb46378a56225be0d4bf6605f59922c4ba10",
+      "title": "Bundle extensions"
+    },
+    {
+      "id": "serenade/docs-dev/CACHE.md",
+      "path": "docs-dev/CACHE.md",
+      "product": "serenade",
+      "sha256": "c6f233eed1d9173f65af580500d98fafcdb1ba53aedbcc7d1e6fadec28490e05",
+      "title": "Cache component"
+    },
+    {
+      "id": "serenade/docs-dev/CONSOLE.md",
+      "path": "docs-dev/CONSOLE.md",
+      "product": "serenade",
+      "sha256": "8aba3a9d0b5065d072e4e02c970ad1b32652a09de3e435c03d69ba0ffa4d7c49",
+      "title": "Console"
+    },
+    {
+      "id": "serenade/docs-dev/ERRORS.md",
+      "path": "docs-dev/ERRORS.md",
+      "product": "serenade",
+      "sha256": "be0d6c03d5f279e2d25fd40e197b3522a947ddeaabc009d7c512ed017394f92a",
+      "title": "Errors"
+    },
+    {
+      "id": "serenade/docs-dev/EXPRESSION.md",
+      "path": "docs-dev/EXPRESSION.md",
+      "product": "serenade",
+      "sha256": "6f18106cc2b7106b284c8c80fe26759bbbbb455117bd1ab57f2287118150a6f3",
+      "title": "Expression"
+    },
+    {
+      "id": "serenade/docs-dev/FILESYSTEM.md",
+      "path": "docs-dev/FILESYSTEM.md",
+      "product": "serenade",
+      "sha256": "1f087a81194281f25ee5a7ec42773898f6b23270ed52f85ee1af9e2fac94137c",
+      "title": "Filesystem"
+    },
+    {
+      "id": "serenade/docs-dev/FINDER.md",
+      "path": "docs-dev/FINDER.md",
+      "product": "serenade",
+      "sha256": "1b973bdb328c53f1ff121520a890a3236f36f1a93a8c45b2b2d68a7cd34c659a",
+      "title": "Finder"
+    },
+    {
+      "id": "serenade/docs-dev/FORMS.md",
+      "path": "docs-dev/FORMS.md",
+      "product": "serenade",
+      "sha256": "f33e5fe0b6cecfbece544c1bbf65ac764edf1ed38be9a589aae4c865d7044839",
+      "title": "Forms"
+    },
+    {
+      "id": "serenade/docs-dev/FRONT-MODES.md",
+      "path": "docs-dev/FRONT-MODES.md",
+      "product": "serenade",
+      "sha256": "0372cb804666cace829589f74b51269b67596690592ac3453b08b3605bf86d3d",
+      "title": "Front modes"
+    },
+    {
+      "id": "serenade/docs-dev/HTTP_CLIENT.md",
+      "path": "docs-dev/HTTP_CLIENT.md",
+      "product": "serenade",
+      "sha256": "7f4a83931a065bb877b44ed1d1c3e57ee76e36aa9084c6ca0a1cc814ffd15b60",
+      "title": "HttpClient"
+    },
+    {
+      "id": "serenade/docs-dev/HTTP_OPS.md",
+      "path": "docs-dev/HTTP_OPS.md",
+      "product": "serenade",
+      "sha256": "586df825e4754fc1f7dcf6196c19779d6e25f74b2a335a97c27c36b2e73dde6a",
+      "title": "HTTP ops helpers"
+    },
+    {
+      "id": "serenade/docs-dev/I18N.md",
+      "path": "docs-dev/I18N.md",
+      "product": "serenade",
+      "sha256": "d9c0ff4c7c9b08250f78fe98685b4452f1c4e6c0cbc8f35ebea1c90b7b71af87",
+      "title": "Internationalization and localization"
+    },
+    {
+      "id": "serenade/docs-dev/KERNEL.md",
+      "path": "docs-dev/KERNEL.md",
+      "product": "serenade",
+      "sha256": "12f31b338589d2cdc873f559b5f4ae5998990cc3c8a271cb364526d48c40820c",
+      "title": "Kernel components"
+    },
+    {
+      "id": "serenade/docs-dev/LOCK.md",
+      "path": "docs-dev/LOCK.md",
+      "product": "serenade",
+      "sha256": "0c2fbccdb35282ed89fbcb406cda22519f878a55a4efe6939ee96b9033a0025b",
+      "title": "Lock"
+    },
+    {
+      "id": "serenade/docs-dev/MAILER.md",
+      "path": "docs-dev/MAILER.md",
+      "product": "serenade",
+      "sha256": "7c7fde8b956c6b4b4d18f4388b1b6e9074d2bdfc1bb3f4b6ad0949018979c4d0",
+      "title": "Mailer"
+    },
+    {
+      "id": "serenade/docs-dev/MESSENGER.md",
+      "path": "docs-dev/MESSENGER.md",
+      "product": "serenade",
+      "sha256": "c3c85ccbdc3782d089cdf73774ed1c4dca30e6cd3f5481d8bb7c4181e7da49dd",
+      "title": "Messenger"
+    },
+    {
+      "id": "serenade/docs-dev/MYFEED.md",
+      "path": "docs-dev/MYFEED.md",
+      "product": "serenade",
+      "sha256": "52809292062e3e0ddb81553bbf36f20f061113ca12dadf4f815396dfd62e3acc",
+      "title": "demo-html (HTML mode demo)"
+    },
+    {
+      "id": "serenade/docs-dev/NOTIFIER.md",
+      "path": "docs-dev/NOTIFIER.md",
+      "product": "serenade",
+      "sha256": "6ea0efd4dd4238f952bab74bf2f58357e5582648247a83d07807739d3f451127",
+      "title": "Notifier"
+    },
+    {
+      "id": "serenade/docs-dev/OBSERVABILITY.md",
+      "path": "docs-dev/OBSERVABILITY.md",
+      "product": "serenade",
+      "sha256": "1a0980b36e34d2affa2dd15bd58fbec1123576a45681b76ea65b5259b9e578a3",
+      "title": "Observability (structured logging)"
+    },
+    {
+      "id": "serenade/docs-dev/OPENAPI.md",
+      "path": "docs-dev/OPENAPI.md",
+      "product": "serenade",
+      "sha256": "a1c12a61ec70376672bf3977568af8e2df152a666fa653e38ee6eb2172bfa072",
+      "title": "OpenAPI (utoipa explorers)"
+    },
+    {
+      "id": "serenade/docs-dev/PERF.md",
+      "path": "docs-dev/PERF.md",
+      "product": "serenade",
+      "sha256": "e81447d4dbf434bea5e75740617bcfd49e90e6046de326763de522445f144e42",
+      "title": "Performance tooling"
+    },
+    {
+      "id": "serenade/docs-dev/PERSISTENCE.md",
+      "path": "docs-dev/PERSISTENCE.md",
+      "product": "serenade",
+      "sha256": "2decdc6a1b0e1d0a59d8b65eefe751c0b8097bffe8ef0e8fb2b7a6c0d791cffa",
+      "title": "Persistence adapters"
+    },
+    {
+      "id": "serenade/docs-dev/PROCESS.md",
+      "path": "docs-dev/PROCESS.md",
+      "product": "serenade",
+      "sha256": "a91b17bc2efcc6108e63386470d1d58172f88bc177588f9a8093dcc446b5025f",
+      "title": "Process"
+    },
+    {
+      "id": "serenade/docs-dev/PROFILER.md",
+      "path": "docs-dev/PROFILER.md",
+      "product": "serenade",
+      "sha256": "bf05576bb6db3e05194ac930aed2ece5b7584e9161502e40fa68f304d5ba2d75",
+      "title": "Web Debug Toolbar / Profiler"
+    },
+    {
+      "id": "serenade/docs-dev/RATE_LIMITER.md",
+      "path": "docs-dev/RATE_LIMITER.md",
+      "product": "serenade",
+      "sha256": "2f6a44e010628029480eaa0878f12cf941424b8af9de6fbd2cfad9700475938f",
+      "title": "RateLimiter"
+    },
+    {
+      "id": "serenade/docs-dev/README.md",
+      "path": "docs-dev/README.md",
+      "product": "serenade",
+      "sha256": "3979f94716b05657883b4b9f93897003ec72c6b35c8d01d13136f7553651e749",
+      "title": "Serenade - developer docs"
+    },
+    {
+      "id": "serenade/docs-dev/RECIPES.md",
+      "path": "docs-dev/RECIPES.md",
+      "product": "serenade",
+      "sha256": "546dffdf8bdff6ac9d610ff6e1870e7f86278c024c319cc2bffb6e5e843bf178",
+      "title": "Recipes and app scaffolding"
+    },
+    {
+      "id": "serenade/docs-dev/RUSTASHOP.md",
+      "path": "docs-dev/RUSTASHOP.md",
+      "product": "serenade",
+      "sha256": "b0b870f1fba7c5b8119ec88e3c3667ef9085e663d8d800548bad37e54133ff7b",
+      "title": "RustaShop on Serenade (illustrative)"
+    },
+    {
+      "id": "serenade/docs-dev/SCHEDULER.md",
+      "path": "docs-dev/SCHEDULER.md",
+      "product": "serenade",
+      "sha256": "82599ccb61b733cb7b314365b05aff9b6091fd5268da1fc891ac61d559f4e841",
+      "title": "Scheduler"
+    },
+    {
+      "id": "serenade/docs-dev/SEARCH.md",
+      "path": "docs-dev/SEARCH.md",
+      "product": "serenade",
+      "sha256": "01988156ccf17ca7cc540101ef01284ba264b03aec4487855e8bf1d00eb016f3",
+      "title": "Search / indexation"
+    },
+    {
+      "id": "serenade/docs-dev/SECURITY.md",
+      "path": "docs-dev/SECURITY.md",
+      "product": "serenade",
+      "sha256": "b657db4c69cd3fbc95f44971661efb1f86cd0ead3ecb331141bff100dabbfbc9",
+      "title": "Security"
+    },
+    {
+      "id": "serenade/docs-dev/SERIALIZER.md",
+      "path": "docs-dev/SERIALIZER.md",
+      "product": "serenade",
+      "sha256": "e4d7de36567eb5623b62fa7c4a62ff90c4699656112d8ae40e044208cc4a6295",
+      "title": "Serializer"
+    },
+    {
+      "id": "serenade/docs-dev/SESSION.md",
+      "path": "docs-dev/SESSION.md",
+      "product": "serenade",
+      "sha256": "6c6408352dd8b99548e56de5aba0d90272df39fbd765a570f1e021689f7844ac",
+      "title": "Session"
+    },
+    {
+      "id": "serenade/docs-dev/STRING.md",
+      "path": "docs-dev/STRING.md",
+      "product": "serenade",
+      "sha256": "a1be0216532b7249380907cf9c9d692343033422a3b7aa446cdb99ff10aed893",
+      "title": "String / Inflector"
+    },
+    {
+      "id": "serenade/docs-dev/SUPPLY-CHAIN.md",
+      "path": "docs-dev/SUPPLY-CHAIN.md",
+      "product": "serenade",
+      "sha256": "5d556f276aa186d6c12a18c7674a3252d52d33537269c2b1b637b557102b1931",
+      "title": "Supply-chain checks"
+    },
+    {
+      "id": "serenade/docs-dev/VIEW.md",
+      "path": "docs-dev/VIEW.md",
+      "product": "serenade",
+      "sha256": "e26eb6f162a38bbc6f4f5999f84ae91c8bf4a280a7486f6b87fd709cc9d307b1",
+      "title": "View helpers and complete documents"
+    },
+    {
+      "id": "serenade/docs-dev/VISION.md",
+      "path": "docs-dev/VISION.md",
+      "product": "serenade",
+      "sha256": "6986a497c84905cf0df887838486e05c8d0af921937289664f729f13aa9dd432",
+      "title": "Vision"
+    },
+    {
+      "id": "serenade/docs-dev/WASM.md",
+      "path": "docs-dev/WASM.md",
+      "product": "serenade",
+      "sha256": "7fea2f6f3625670e2a57a3716a864c334ac842b931b669e7b858d205a9cf1532",
+      "title": "Wasm host capability facade"
+    },
+    {
+      "id": "serenade/docs-dev/WORKFLOW.md",
+      "path": "docs-dev/WORKFLOW.md",
+      "product": "serenade",
+      "sha256": "b527e83058a957b8040bad311723490eacd9af26bba75347cc70675106765ddf",
+      "title": "Workflow"
+    },
+    {
+      "id": "serenade/docs/CHANGELOG.md",
+      "path": "docs/CHANGELOG.md",
+      "product": "serenade",
+      "sha256": "7100597d30e76d830627a96339f70e50f1df441a3c0dc92b2fdd85afca26f4c1",
+      "title": "Changelog"
+    },
+    {
+      "id": "serenade/docs/README.md",
+      "path": "docs/README.md",
+      "product": "serenade",
+      "sha256": "a5da10a9da777026e0d19ef56210a48b776c84fbc1331ff4a7c8565124cb52c7",
+      "title": "**Serenade**"
+    },
+    {
+      "id": "serenade/guides/concepts/architecture.md",
+      "path": "docs/astro/src/content/docs/concepts/architecture.md",
+      "product": "serenade",
+      "sha256": "a1d6aa4a0bbea63cc60a21c386d9c905ae5b6b2bbcf3d824bc4bdca164e5cb26",
+      "title": "What if Symfony’s architectural ideas were built for Rust?"
+    },
+    {
+      "id": "serenade/guides/concepts/bundles.md",
+      "path": "docs/astro/src/content/docs/concepts/bundles.md",
+      "product": "serenade",
+      "sha256": "abec882738467ebd5e10e6308a60daec5eb729fa48c62a7c833c227978624e6c",
+      "title": "bundles.md"
+    },
+    {
+      "id": "serenade/guides/first-steps/choose-your-mode.md",
+      "path": "docs/astro/src/content/docs/first-steps/choose-your-mode.md",
+      "product": "serenade",
+      "sha256": "9ac744ed43e0445b6cfa374b0537f7816db454eeb8eca37aab151435b4ac2087",
+      "title": "choose-your-mode.md"
+    },
+    {
+      "id": "serenade/guides/first-steps/first-application.md",
+      "path": "docs/astro/src/content/docs/first-steps/first-application.md",
+      "product": "serenade",
+      "sha256": "9284147f75109c61321f82f8aa410fb9dd3ff168fcb2993fb794176d8f7c7a7c",
+      "title": "first-application.md"
+    },
+    {
+      "id": "serenade/guides/first-steps/installation.md",
+      "path": "docs/astro/src/content/docs/first-steps/installation.md",
+      "product": "serenade",
+      "sha256": "582bda56a955d98d30aa39d3ae0e1bab30a41bbad7ad8fcc07d406c1340088fa",
+      "title": "installation.md"
+    },
+    {
+      "id": "serenade/guides/reference/api-docs.md",
+      "path": "docs/astro/src/content/docs/reference/api-docs.md",
+      "product": "serenade",
+      "sha256": "097cff16951d94817e34bef59124d3f72dd6f19d9bebc35582ad718e337b56fa",
+      "title": "api-docs.md"
+    },
+    {
+      "id": "serenade/guides/tutorials/first-bundle-app.md",
+      "path": "docs/astro/src/content/docs/tutorials/first-bundle-app.md",
+      "product": "serenade",
+      "sha256": "a74264ab1e9ba7e8b448c836cd2841172f02b63cf59bef38197dd1dee2ef94ec",
+      "title": "first-bundle-app.md"
+    },
+    {
+      "id": "serenade/guides/tutorials/index.md",
+      "path": "docs/astro/src/content/docs/tutorials/index.md",
+      "product": "serenade",
+      "sha256": "d10581ad44952900e8791771b767f1f2ad5da72d72f6e5b8501897a84dd2af43",
+      "title": "index.md"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/bin/console.rs",
+      "path": "examples/demo-app/src/bin/console.rs",
+      "product": "serenade",
+      "sha256": "87133c6d21e353e4261a987cacac081d357527c0ab2c48410b9c06e0818cd284",
+      "title": "console.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/bundle.rs",
+      "path": "examples/demo-app/src/bundle.rs",
+      "product": "serenade",
+      "sha256": "da516b3da87722f9a3eb37cbeecd6ab9eb3fbb7e00a83c83e8fc7c808b90f15f",
+      "title": "bundle.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/lib.rs",
+      "path": "examples/demo-app/src/lib.rs",
+      "product": "serenade",
+      "sha256": "526498bc8d102724f3ae80c3d1ddc9b60f361abf78d0ef0e22995a5911969bc3",
+      "title": "lib.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/main.rs",
+      "path": "examples/demo-app/src/main.rs",
+      "product": "serenade",
+      "sha256": "84ed20ac3705f7453093f693f84660a10c9c2e23c49f71377d1049fb70ca7126",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/Cargo.toml",
+      "path": "examples/demo-universal/apps/demo-back/Cargo.toml",
+      "product": "serenade",
+      "sha256": "2c024e7b2adf8f8d16bec52404e3569a8a9c61de1cdb85a73290ff31ca8b716a",
+      "title": "Used by Rangular-generated Rust for its browser event types."
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/build.rs",
+      "path": "examples/demo-universal/apps/demo-back/build.rs",
+      "product": "serenade",
+      "sha256": "028c3b01e7b5f639f9af84f1183a22216c7afb5947826433fa7bbd0838c1b441",
+      "title": "build.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/assets.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/assets.rs",
+      "product": "serenade",
+      "sha256": "4d888856fb67ca1e9d2bb90ef65430f6590cc7c36e77b33648ed3ea2e83a8e68",
+      "title": "assets.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/html.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/html.rs",
+      "product": "serenade",
+      "sha256": "ab89fdcc49275472901eee9ead2c7561c3e58f329eb8a540dab4d95e089939f4",
+      "title": "html.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/main.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/main.rs",
+      "product": "serenade",
+      "sha256": "db7ae0ae6094d3a31ea1c6ae71d8bc19be8d50ff621973610920759b804bc279",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
+      "product": "serenade",
+      "sha256": "0c11ffc44d561c3299236e17a126ca4ab97e9f01e8f429c2b4e71f1c422463f7",
+      "title": "body.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
+      "product": "serenade",
+      "sha256": "805fb1b9e7bc50feaf03faf2d6b3a7843f49f0aee809d996031989f77545d59b",
+      "title": "document.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
+      "product": "serenade",
+      "sha256": "9eb24e84409582e2a2f26b5ed11853d31ccd591c1dfdd56cd6ba329c3ce4e90d",
+      "title": "head.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/Cargo.toml",
+      "path": "examples/demo-universal/apps/demo-front/Cargo.toml",
+      "product": "serenade",
+      "sha256": "57bb1a06e0f1bea2a37ebf450ab0d1b2cf6f419eb02a53a9d92c7c03fb748e0b",
+      "title": "Cargo.toml"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/Trunk.toml",
+      "path": "examples/demo-universal/apps/demo-front/Trunk.toml",
+      "product": "serenade",
+      "sha256": "85ce4ef37a43ff150d3a6e5ca41f5a6e54f32f906ea85fde684e781c3db5cf63",
+      "title": "Trunk.toml"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/build.rs",
+      "path": "examples/demo-universal/apps/demo-front/build.rs",
+      "product": "serenade",
+      "sha256": "caafe28c3e6b3913a6ab95566dc838d38d953f37c355eed653faeae92218978e",
+      "title": "build.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/index.html",
+      "path": "examples/demo-universal/apps/demo-front/index.html",
+      "product": "serenade",
+      "sha256": "4da90cf08a32143c87b538c84e9eac7dee66c7c5a9a30401b9ebaab39cd0fc89",
+      "title": "index.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
+      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
+      "product": "serenade",
+      "sha256": "821315b88587b8943e42cc6490225869b8f7d37b8072a379f7cee94e6b187065",
+      "title": "cms-hello-body.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
+      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
+      "product": "serenade",
+      "sha256": "3639de38807aca05216e1d80127563e6900ac3d092eaced10c3cdb46480a4e0a",
+      "title": "cms-hello-head.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/main.rs",
+      "path": "examples/demo-universal/apps/demo-front/src/main.rs",
+      "product": "serenade",
+      "sha256": "c77e453fc037e1de365f294d08548d0086d2042d971203d5a1bebf6ab19e4061",
+      "title": "main.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.html",
+      "path": "demo-leptos/src/components/item_list/item_list.html",
+      "product": "rangular",
+      "sha256": "b0ea13a82168f73e83852d7bdc6e8c5ac5726280cea2bae7cdc0ef2668c44731",
+      "title": "item_list.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.rs",
+      "path": "demo-leptos/src/components/item_list/item_list.rs",
+      "product": "rangular",
+      "sha256": "ab3c8c778e9b58a1accdf2a9beae1d45962059db7fd50f9556f88a3bcc1dcaf2",
+      "title": "item_list.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.scss",
+      "path": "demo-leptos/src/components/item_list/item_list.scss",
+      "product": "rangular",
+      "sha256": "d93a1d455ca10f15b280f14fd05ec784626312a285579f06f115371f7fbb15e9",
+      "title": "item_list.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/mod.rs",
+      "path": "demo-leptos/src/components/item_list/mod.rs",
+      "product": "rangular",
+      "sha256": "5812cc41b24a3ef46963fa59d64530bba515803471946f216b8f3be09d40236c",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/docs/CHANGELOG.md",
+      "path": "docs/CHANGELOG.md",
+      "product": "rangular",
+      "sha256": "60753c2f227f310558754fe7682c754856e8d9fc5662ac14578cc53679a139c9",
+      "title": "Changelog"
+    },
+    {
+      "id": "rangular/docs/OVERVIEW.md",
+      "path": "docs/OVERVIEW.md",
+      "product": "rangular",
+      "sha256": "a00d5a69f9d108c4520abf9718e7e2983099b6dc4f09bac6456febaa8b2b9c9e",
+      "title": "rangular docs"
+    },
+    {
+      "id": "rangular/docs/README.md",
+      "path": "docs/README.md",
+      "product": "rangular",
+      "sha256": "0b0436b4d65ccf206fcbe45b90b85902aec9548836fef09d2f064196d3be5672",
+      "title": "rangular"
+    },
+    {
+      "id": "rangular/docs/SPEC.md",
+      "path": "docs/SPEC.md",
+      "product": "rangular",
+      "sha256": "dee070a497de7f35b0b01ab1f5bd8dcbf915f21653b094752ef8043e2b81c23e",
+      "title": "rangular specification v0.1"
+    }
+  ],
+  "products": {
+    "rangular": {
+      "repository": "https://github.com/Interchouette-ITC/rangular",
+      "revision": "d6322602ebd2970f30dd98b791aa0e2a7018ea12",
+      "status": "tagged source",
+      "tag": "v1.1.0",
+      "version": "1.1.0"
+    },
+    "serenade": {
+      "repository": "https://github.com/Interchouette-ITC/Serenade",
+      "revision": "c0a4b4cc19c05c20d063c8cd4e5f54316477db0b",
+      "status": "development snapshot",
+      "tag": null,
+      "version": "1.0.0"
+    }
+  }
+}

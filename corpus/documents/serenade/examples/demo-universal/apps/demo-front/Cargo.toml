@@ -1,0 +1,37 @@
+[package]
+name = "serenade-demo-front"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+leptos = { version = "0.8", features = ["csr", "hydrate"] }
+serenade-demo-contract = { path = "../../libs/demo-contract" }
+serenade-view = { path = "../../../../crates/serenade-view", features = ["leptos-client"] }
+rangular = "1.1.0"
+serde_json = { workspace = true }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = [
+    "Document",
+    "Element",
+    "Event",
+    "EventTarget",
+    "History",
+    "HtmlBodyElement",
+    "HtmlElement",
+    "HtmlHeadElement",
+    "Location",
+    "MouseEvent",
+    "Node",
+    "NodeList",
+    "Response",
+    "Window",
+] }
+
+[build-dependencies]
+rangular-build = "1.1.0"
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3"

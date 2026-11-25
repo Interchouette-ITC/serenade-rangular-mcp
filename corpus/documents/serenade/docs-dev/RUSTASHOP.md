@@ -1,0 +1,71 @@
+# RustaShop on Serenade (illustrative)
+
+**Example only - not a locked RustaShop repo decision.** Shows how a Symfony-shaped product might sit on Serenade. Names match the live [rustashop](https://github.com/Interchouette-ITC/rustashop) tree where helpful.
+
+## Layering
+
+```text
+RustaShop application
+├── Serenade kernel (lifecycle, DI, events, HTTP foundation, …)
+├── Serenade + RustaShop bundles
+├── Chosen persistence (SQLx | SeaORM | Diesel spike)
+├── Chosen HTTP adapters (Actix commerce API; Axum reserved for MCP)
+└── UIs (Angular, rangular/Leptos) on OpenAPI + realtime
+```
+
+## Example crate map
+
+```text
+crates/
+├── rustashop/                 # Application kernel (registers bundles)
+├── rustashop-api/             # Commerce HTTP (Actix / Serenade listen)
+├── rustashop-mcp/             # Axum MCP (stdio or Streamable HTTP on `/mcp`)
+├── rustashop-domain/          # Pure domain (no ORM types in entities)
+├── rustashop-persist/         # Feature-selected facade
+├── rustashop-persist-sqlx/    # SQLx adapter
+├── rustashop-persist-seaorm/  # SeaORM adapter
+├── rustashop-persist-diesel/  # Diesel spike (not selected by rustashop-persist facade)
+├── rustashop-extensions/      # WIT Component Model host
+└── rustashop-sandbox/         # Wasmer polyglot sandbox host
+```
+
+## Example domain modules (inside domain or bundles)
+
+```text
+rustashop-domain/
+├── catalog/
+├── cart/
+├── checkout/
+├── order/
+├── customer/
+├── payment/
+├── shipping/
+├── promotion/
+└── tax/
+```
+
+Bundles then **compose** these modules: routes, services, subscribers, config.
+
+## What Serenade gives RustaShop
+
+| Need                        | Serenade                                                                                             |
+| --------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Service wiring              | DI container                                                                                         |
+| Checkout side effects       | Event dispatcher + messenger                                                                         |
+| Admin + API auth            | Security component                                                                                   |
+| Config per env              | Config component                                                                                     |
+| CLI (migrate, seed, worker) | Console (#8; optional ratatui)                                                                       |
+| App scaffolding / recipes   | Flex-like recipes (#30); Cargo for deps                                                              |
+| DTO API ↔ JSON              | Serializer + validator                                                                               |
+| OpenAPI explorers           | `serenade-openapi` (utoipa helpers + optional Swagger/Redoc/RapiDoc/Scalar)                          |
+| Wasm engine plumbing        | `serenade-component-host` (wasmtime CM) + `serenade-sandbox` (Wasmer WASIX) - see [WASM.md](WASM.md) |
+
+## What stays RustaShop-specific
+
+- Money as integer minor units
+- Commerce OpenAPI path/schema annotations and dump/CI (framework mounts explorers)
+- WebSocket-first realtime ([RustaShop REALTIME.md](https://github.com/Interchouette-ITC/rustashop/blob/dev/docs-dev/REALTIME.md))
+- WIT worlds, quote/migration fixtures, proposal gates on top of Serenade Wasm hosts
+- AI-native tools and MCP ([RustaShop AI-NATIVE.md](https://github.com/Interchouette-ITC/rustashop/blob/dev/docs-dev/AI-NATIVE.md))
+
+Framework work tracks in **this** repo; commerce epics track in the application repo.

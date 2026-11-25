@@ -1,0 +1,433 @@
+# rangular specification v0.1
+
+This document is the language contract for
+**[rangular](https://github.com/Interchouette-ITC/rangular)** **0.1.x**. Patch
+releases clarify diagnostics and fix bugs without breaking supported syntax.
+Minor releases may add constructs when fixtures and tests cover them. Major
+releases may remove or rename supported constructs only with a migration note.
+
+## Scope
+
+| In scope                                                                                                                             | Out of scope (v0.1)                     |
+| ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
+| Web DOM via Leptos CSR, SSR, and hydration                                                                                           | Full Angular framework                  |
+| External `.html` templates                                                                                                           | Markup inside Rust controllers          |
+| Component `.scss` (compiled then encapsulated)                                                                                       | Full Angular forms / NgModel            |
+| AOT (production default)                                                                                                             | i18n, NgModule, Angular DI              |
+| Runtime interpreter (tests/tooling)                                                                                                  | Claiming runtime as the production path |
+| Fixture-driven growth                                                                                                                | Native desktop GUI toolkits             |
+| Default + named `<rg-content>` (and Angular `<ng-content>` alias), `EventPayload`, Input/Output, pipes, banana, `ng-template` outlet | Silent ignore of unknown syntax         |
+
+## Server rendering and hydration
+
+AOT templates lower to ordinary Leptos `IntoView` components. The same
+generated component can therefore be rendered to HTML by a native Leptos
+server build and hydrated by a wasm build; rangular does not maintain a second
+HTML serializer or a separate template implementation for SSR.
+
+Use Leptos's `ssr` feature to render a component with `RenderHtml::to_html()`
+(or the server integration's streaming renderer). Use the matching Leptos
+`hydrate` feature in the browser entry point and call `hydrate_body` with that
+same component. Keep controller state and host access SSR-safe: browser-only
+APIs must be isolated to browser-only code, and server and browser must produce
+the same initial component tree for hydration.
+
+```rust,ignore
+// Native renderer
+let html = generated::hello_view(host).into_view().to_html();
+
+// wasm entry point
+leptos::mount::hydrate_body(|| generated::hello_view(host));
+```
+
+Generated code names Rangular items only through the `rangular` facade
+(`rangular::host`, `rangular::aot`, `rangular::expr`), so the consuming crate
+depends on `rangular` for every target.
+
+| Target                        | Status    | Coverage                                                                  |
+| ----------------------------- | --------- | ------------------------------------------------------------------------- |
+| Browser CSR / wasm            | Supported | Demo wasm build and lint                                                  |
+| Native SSR                    | Supported | Exact HTML assertions in an independent consumer crate                    |
+| SSR + browser hydration       | Supported | Native SSR output hydrated in headless Chrome; server nodes reused, events and reactive updates verified |
+
+Leptos remains responsible for HTML escaping, hydration markers, and DOM
+hydration. AOT-generated views are the shared source of UI; hand-authored HTML
+strings are not an SSR substitute.
+
+Rangular AOT normalizes template whitespace but does not minify final documents.
+Document minification belongs after page assembly (for static output) or around
+the completed HTTP response (for runtime SSR); it must preserve hydration
+markers and whitespace that affects rendered text.
+
+**Desktop shells with a webview** (for example Tauri) are still the web path:
+the UI is Leptos CSR / wasm inside the webview. They are **not** a separate
+native-widget target. For Angular-style **native** desktop GUIs, see external
+projects such as Angust; they are outside this contract.
+
+## Authoring model
+
+```text
+Controller (Rust)     state, services, handlers - no markup
+Component shell       inputs/outputs, inject, template path
+Template (*.html)     Angular-subset markup
+Styles (*.scss)       component rules + :host
+App global CSS        loaded by the host app (not rewritten by rangular)
+```
+
+Global utility classes (for example `.btn`, `.container`) come from the host
+application stylesheet. **[rangular](https://github.com/Interchouette-ITC/rangular)**
+does **not** ship or require a particular global CSS framework. Component CSS
+encapsulation must not mangle global selectors the app loads separately.
+
+## Template grammar (v0.1 core)
+
+### Elements and text
+
+- Normal HTML elements and static text nodes.
+- `{`{ expression `}`}` for text interpolation.
+- HTML comments are preserved in the AST; they do not affect bindings.
+- A document template may start with `<!DOCTYPE html>` (case-insensitive,
+  optionally preceded by whitespace). The parser preserves it as the first
+  `Node::Doctype` in `Template.nodes`, and the structural IR includes
+  `IrNode::Doctype`. AOT emits `<!DOCTYPE html>` at the start of the view; runtime
+  interpretation and rendering preserve it as `VNode::Doctype`, which snapshots
+  write as `<!DOCTYPE html>`. Any other doctype, or a doctype after the first
+  node, is `RANG001`; head templates reject it with `RANG403`. A declaration
+  without template content remains an empty-template error (`RANG401`).
+
+### Property and attribute bindings
+
+| Surface syntax        | Meaning                     |
+| --------------------- | --------------------------- |
+| `[prop]="expr"`       | DOM property binding        |
+| `[attr.name]="expr"`  | Attribute binding           |
+| `[class.name]="expr"` | Toggle CSS class on element |
+| `[(prop)]="ident"`    | Two-way banana (see below)  |
+
+Static attributes without brackets pass through unchanged.
+
+AOT keeps `[attr.name]` and interpolated attribute values distinct from `[prop]`
+DOM property bindings. Open Graph markup such as
+`<meta property="og:title" content="{{ title }}" />` is supported. Static and
+dynamic `property` attributes use Leptos custom-attribute spreads because Leptos
+does not provide a `property` attribute builder.
+
+### Two-way banana `[(…)]`
+
+| Surface syntax       | Desugars to                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| `[(value)]="seed"`   | `[value]="seed"` + `(input)` writeback via `Host::set` (str)   |
+| `[(checked)]="flag"` | `[checked]="flag"` + `(change)` writeback via `Host::set` (bool); AOT reads `el.checked` |
+| `[(name)]="ident"`   | `[name]="ident"` + `(nameChange)` writeback via `Host::set`    |
+
+Boolean DOM properties `[disabled]` and `[checked]` evaluate with `eval_bool`
+(not `prop_str`), so `false` does not become a truthy string in the DOM.
+
+Parse expands banana into a property binding plus an event handler that calls
+internal `$bananaSet(ident, $event)`. AOT `HostCell` and the Host `set` path
+apply the write; no full `NgModel` / forms module.
+
+Fixture: [`tests/fixtures/components/two-way/two-way.html`](../tests/fixtures/components/two-way/two-way.html).
+
+### Host-side validation (minimal)
+
+Validation is **not** an Angular forms / `NgModel` module. Hosts compute validity
+and messages with helpers in [`validate.rs`](../crates/rangular-host/src/validate.rs)
+(`required`, `min_length`, `max_length`, `pattern`, and matching `*_value`
+wrappers), then expose bindings the template already understands (`@if`, `{{ }}`).
+
+Compile a [`Regex`](https://docs.rs/regex) once when constructing the Host; pass
+`&Regex` into `pattern` / `pattern_value` on each `get`.
+
+| Pattern       | Meaning                                                     |
+| ------------- | ----------------------------------------------------------- |
+| `nameInvalid` | Bool from Host (`required(…).is_some()`, or other helpers)  |
+| `nameDirty`   | Bool; Host sets true on first user edit via two-way binding |
+| `nameError`   | Message string from Host (`….unwrap_or("")`)                |
+
+| Helper         | Meaning                                                                  |
+| -------------- | ------------------------------------------------------------------------ |
+| `required`     | Empty or whitespace-only → error                                         |
+| `min_length`   | Non-empty value shorter than `min` Unicode scalars → error; empty passes |
+| `max_length`   | Longer than `max` Unicode scalars → error                                |
+| `pattern`      | `Regex::is_match` fails → error                                          |
+| `first_error`  | First non-`None` message from a list of helper results                   |
+
+Show the alert only when invalid **and** dirty: `@if (nameInvalid && nameDirty)` (Angular pristine field hides errors until edit).
+
+Fixtures:
+
+- Minimal required: [`tests/fixtures/components/field-required/field-required.html`](../tests/fixtures/components/field-required/field-required.html)
+- Multi-field compose (`required` + `min_length` / `pattern` via `first_error`):
+  [`tests/fixtures/components/field-validators/field-validators.html`](../tests/fixtures/components/field-validators/field-validators.html)
+
+Full `NgModel`, `FormGroup`, and directive validators remain out of scope.
+
+### Event bindings
+
+| Surface syntax              | Meaning                                 |
+| --------------------------- | --------------------------------------- |
+| `(click)="handler($event)"` | DOM event; `$event` is the event object |
+| `(input)="onInput($event)"` | Common form events                      |
+
+Handler names resolve through the host `call` API. `$event` is a typed
+[`EventPayload`](../crates/rangular-host/src/event.rs) (`Click { x, y }`, `Input { value }`,
+`Error`, `Load`, or `Custom`) exposed as `Value::Event` (see fixture
+[`tests/fixtures/components/event-payload/event-payload.html`](../tests/fixtures/components/event-payload/event-payload.html)).
+
+### Content projection
+
+| Surface syntax              | Meaning                                                       |
+| --------------------------- | ------------------------------------------------------------- |
+| `<rg-content></rg-content>` | Default projection slot (preferred in rangular fixtures)      |
+| `<ng-content></ng-content>` | Same as above; Angular-compatible alias                       |
+| `<rg-content select="…">`   | Named slot; match projected roots (tag / `.class` / `[attr]`) |
+| `<ng-content select="…">`   | Same as above; Angular-compatible alias                       |
+
+Fixture (default): [`tests/fixtures/components/layout-shell/`](../tests/fixtures/components/layout-shell/).
+Fixture (named): [`tests/fixtures/components/named-slots/`](../tests/fixtures/components/named-slots/).
+
+Default-only templates keep a single Leptos `Children` argument. Templates with
+`select` take additional `Children` params named from the select
+(`.header` → `slot_header`) plus `children` for the default slot when present.
+Runtime partitions projected roots with [`ProjectionBag`](../crates/rangular-runtime/src/slots.rs).
+
+### `ng-template` and outlet
+
+| Surface syntax                      | Meaning                                    |
+| ----------------------------------- | ------------------------------------------ |
+| `<ng-template #ref>…</ng-template>` | Named fragment; not rendered until stamped |
+| `[ngTemplateOutlet]="ref"`          | Stamp that fragment (fixture syntax)       |
+
+Typically hosted on `<ng-container>`. Fixture:
+[`tests/fixtures/components/template-outlet/template-outlet.html`](../tests/fixtures/components/template-outlet/template-outlet.html).
+
+**Not in v0.1:** `@ContentChild` / `@ViewChild`, `ngProjectAs`, `*ngTemplateOutlet`
+micro-syntax (use `[ngTemplateOutlet]`).
+
+### Component Input / Output (growth)
+
+Parent ↔ child communication uses `[input]` and `(output)` on registered tags.
+Teaching fixtures:
+
+- [`tests/fixtures/components/io-child/`](../tests/fixtures/components/io-child/)
+- [`tests/fixtures/components/io-parent/io-parent.html`](../tests/fixtures/components/io-parent/io-parent.html)
+
+`Registry` stores input / output names per tag (`app-io-child`, `app-chrome-header`).
+[`classify_bindings`](../crates/rangular-parser/src/component_io.rs) rewrites matching
+`[prop]` / `(event)` into `Input` / `Output` attrs. AOT emits hyphenated tags as
+`div[data-rangular-component=…]` host shells with `data-input-*` /
+`data-output-*` attrs; runtime snapshots use `input:` / `output:` labels.
+Full view-fn composition remains a follow-up.
+
+### Control flow
+
+| Construct                               | Notes                                                                             |
+| --------------------------------------- | --------------------------------------------------------------------------------- |
+| `@if (cond) { … }`                      | Primary v0.1 conditional                                                          |
+| `@else { … }`                           | Optional else block                                                               |
+| `@for (item of list; track item) { … }` | Primary v0.1 loop; `$index`, `$count`, `$first`, `$last`, `$even`, `$odd` in body |
+| `*ngIf="cond"`                          | Desugars to `@if` during parse                                                    |
+| `*ngFor="let x of xs"`                  | Desugars to `@for` during parse                                                   |
+
+### Expressions (v0.1)
+
+Literals (string, number, bool), identifiers and dotted paths, unary `!`,
+binary `&&`, `||`, `==`, `!=`, parenthesis, handler calls such as
+`togglePalette()` or `onColorInput($event)`, and **pipes** in interpolations
+and property / attribute bindings.
+
+### Pipes
+
+| Surface syntax            | Meaning                     |
+| ------------------------- | --------------------------- |
+| `{{ value \| pipe }}`     | Apply named pipe to `value` |
+| `{{ value \| pipe:arg }}` | Pipe with colon args        |
+| `{{ a \| b \| c }}`       | Left-associative chain      |
+
+Builtins (pure transforms on eval): `uppercase`, `lowercase`, `number`, `json`.
+
+| Builtin | Input | Notes |
+| --- | --- | --- |
+| `uppercase` / `lowercase` | `Str` only | reject non-strings and colon args |
+| `number` | `Num`, parseable `Str`, or `Bool` | optional integer digits arg `0..=20` |
+| `json` | any value | reject colon args |
+
+Failed pipe eval becomes empty display in runtime / AOT (`Value::Unit`); callers that use
+[`PipeRegistry::apply`](../crates/rangular-expr/src/pipe.rs) or `eval_with_pipes` still see
+`EvalError`.
+
+Apps register custom pipes on [`Registry::register_pipe`](../crates/rangular/src/registry.rs)
+(same map for AOT `HostCell::with_pipes` and runtime `interpret_with_pipes`).
+
+Fixture: [`tests/fixtures/components/pipes/pipes.html`](../tests/fixtures/components/pipes/pipes.html).
+
+**Not in v0.1:** ternary, nullish coalescing, assignment expressions (banana
+uses `Host::set` instead), impure pipe change-detection, arbitrary method
+chains beyond what the host exposes.
+
+## Reference template: color-field
+
+Canonical example from
+[`tests/fixtures/components/color-field/`](../tests/fixtures/components/color-field/)
+(also `chrome-header`, `asset-icon` in the same folder):
+
+```html
+<div class="color-field">
+  <span class="color-field__label">{{ label }}</span>
+  <input
+    [id]="inputId"
+    type="color"
+    class="color-field__color"
+    [value]="value"
+    (input)="onColorInput($event)"
+  />
+  <button
+    type="button"
+    class="color-field__toggle"
+    [class.color-field__toggle--open]="paletteOpen"
+    [attr.aria-expanded]="paletteOpen"
+    (click)="togglePalette()"
+  >
+    Palette
+  </button>
+</div>
+```
+
+The host exposes bindings such as `label`, `value`, `paletteOpen`, and the
+handler methods. Class names that are only **global** app utilities (for example
+`.btn`) pass through unscoped; component classes such as `.color-field` are
+scoped by encapsulation when you use that path.
+
+## Component SCSS (v0.1)
+
+Authors write **SCSS** component sheets (`:host`, nesting, `&`). `rangular::css::encapsulate`
+compiles them (grass) then applies emulated encapsulation. Output is flat CSS for
+the browser. Encapsulation is **emulated**: scoped rules receive a generated
+attribute selector; `:host` rewrites to that host selector.
+
+Example (from the `color-field` fixture):
+
+```scss
+:host {
+  display: block;
+  pointer-events: none;
+}
+
+.color-field__label {
+  display: block;
+  font-size: 0.75rem;
+}
+```
+
+Rules:
+
+- `:host` and `:host(...)` rewrite to the component host attribute selector.
+- Class and element selectors defined in the component sheet are scoped with a
+  content attribute on the rightmost compound selector.
+- Selectors that are **only** known global utility classes (for example
+  `.btn`, `.btn-primary`, `.container`) are **not** scoped, so host-app
+  Bootstrap (or similar) sheets keep matching.
+- `@media`, `@supports`, `@container`, and `@layer` pass through; inner
+  selectors still encapsulate.
+- Unbalanced or malformed input yields `RANG301` diagnostics; never panics.
+
+API: `rangular::css::encapsulate` (SCSS) with `ScopeAttrs`. Flat CSS helpers are
+test/tooling only (`encapsulate_css`).
+
+## Host API (shared by AOT and runtime)
+
+| Operation          | Purpose                                          |
+| ------------------ | ------------------------------------------------ |
+| `get(path)`        | Read a binding value (`label`, `paletteOpen`, …) |
+| `set(path, value)` | Two-way / input side effects when needed         |
+| Validation helpers | `required`, `min_length`, `max_length`, `pattern`, `first_error` (+ `*_value`) |
+| `call(name, args)` | Invoke controller handlers                       |
+| Event bridge       | Map `(click)` etc. to host callables             |
+
+## Inject / registry
+
+Typed services use `Registry::provide` / `Registry::inject` (TypeId map).
+Component custom tags resolve through the same registry. Apps call
+`register_tag` for their own components. `Registry::with_example_panels()`
+registers tags that match the fixture corpus:
+
+| Tag                 | Component    |
+| ------------------- | ------------ |
+| `app-item-list`     | ItemList     |
+| `app-color-field`   | ColorField   |
+| `app-chrome-header` | ChromeHeader |
+| `app-asset-icon`    | AssetIcon    |
+
+At the Leptos app edge, apps map this to `provide_context` / `use_context` as
+needed.
+
+## Diagnostics
+
+Format:
+
+```text
+error[RANG001]: message at path:line:col
+warning[RANG101]: message at path:line:col
+```
+
+| Code range          | Kind                                       |
+| ------------------- | ------------------------------------------ |
+| `RANG001`–`RANG099` | Parse errors (fatal for that template)     |
+| `RANG101`–`RANG199` | Parse warnings (unsupported but non-fatal) |
+| `RANG201`–`RANG299` | Expression errors                          |
+| `RANG301`–`RANG399` | CSS errors                                 |
+| `RANG401`–`RANG499` | AOT lowering errors                        |
+| `RANG501`–`RANG599` | Runtime interpret errors                   |
+
+Examples:
+
+- `RANG001` unexpected token in template
+- `RANG101` unknown directive (skipped when safe)
+- `RANG201` unknown identifier in expression
+- `RANG301` malformed `:host` selector
+- `RANG401` empty template (AOT and runtime)
+- `RANG501`–`RANG599` other runtime interpret errors
+
+AOT may promote selected warnings to compile errors when configured; default
+builds fail on `RANG001` and `RANG201` for in-scope fixtures.
+
+Production builds use **AOT**. The **runtime** interpreter shares the same AST,
+Host API, and structural binding IR for parity tests and tooling; it is not the
+production path. Parity requires AOT and runtime to agree on in-subset fixtures
+(`ok` outcome, shared IR snapshot, and host-evaluated runtime goldens where a
+fixture host exists).
+
+## Best-effort / no-panic policy
+
+Template and CSS input must **never** cause `panic!`, `unwrap` on user content,
+or process abort.
+
+| Situation                      | Behavior                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| Unknown attribute or directive | Emit `RANG101` (or structured skip); continue when safe                            |
+| Malformed but bounded input    | Return `Err` with diagnostics list                                                 |
+| Garbage / fuzz input           | Return diagnostics; no stack unwind                                                |
+| Internal invariant broken      | Allowed to panic only on programmer bugs in rangular itself, not on user templates |
+
+Parser, runtime, and AOT share diagnostic types so fixtures can golden-test
+both success and expected unsupported cases.
+
+## Fixture-driven expansion
+
+1. Add or update a file under `tests/fixtures/`.
+2. If syntax is new, bump the **minor** spec version and document it here.
+3. Implement parser/CSS/expr/backends **or** check in expected diagnostics.
+4. Parity tests require AOT and runtime to agree on in-subset fixtures.
+5. **Gate:** `rangular-parser` integration test `required_fixtures_exist` fails
+   if a planned construct path is missing; SPEC must name the fixture paths for
+   `EventPayload`, `rg-content`, `ng-content`, `layout-shell`, `io-child`, `pipes`, `two-way`,
+   `named-slots`, `template-outlet`, `field-required`, and `field-validators`.
+
+## SemVer summary
+
+| Bump      | When                                                    |
+| --------- | ------------------------------------------------------- |
+| **PATCH** | Bug fixes, clearer diagnostics, no grammar change       |
+| **MINOR** | New supported syntax covered by fixtures and tests      |
+| **MAJOR** | Breaking removal or semantic change to supported syntax |
