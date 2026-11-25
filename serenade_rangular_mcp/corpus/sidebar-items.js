@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["content","entry","find","manifest","text"],"struct":["Document","DocumentContent","Entry","Manifest","Product","Section"]};

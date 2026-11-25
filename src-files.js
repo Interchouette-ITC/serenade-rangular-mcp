@@ -1,0 +1,2 @@
+createSrcSidebar('[["refresh_docs",["",[],["main.rs"]]],["serenade_rangular_mcp",["",[["corpus",[],["mod.rs"]],["server",[],["guidance.rs","local.rs","manifest.rs","mod.rs","tools.rs"]],["transport",[],["mod.rs"]]],["lib.rs"]]]]');
+//{"start":19,"fragment_lengths":[36,172]}

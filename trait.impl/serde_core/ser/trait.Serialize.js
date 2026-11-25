@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["serenade_rangular_mcp",[["impl <a class=\"trait\" href=\"https://docs.rs/serde_core/1.0.229/serde_core/ser/trait.Serialize.html\" title=\"trait serde_core::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Document.html\" title=\"struct serenade_rangular_mcp::corpus::Document\">Document</a>",0],["impl <a class=\"trait\" href=\"https://docs.rs/serde_core/1.0.229/serde_core/ser/trait.Serialize.html\" title=\"trait serde_core::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Product.html\" title=\"struct serenade_rangular_mcp::corpus::Product\">Product</a>",0],["impl <a class=\"trait\" href=\"https://docs.rs/serde_core/1.0.229/serde_core/ser/trait.Serialize.html\" title=\"trait serde_core::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Section.html\" title=\"struct serenade_rangular_mcp::corpus::Section\">Section</a>",0],["impl&lt;'a&gt; <a class=\"trait\" href=\"https://docs.rs/serde_core/1.0.229/serde_core/ser/trait.Serialize.html\" title=\"trait serde_core::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.DocumentContent.html\" title=\"struct serenade_rangular_mcp::corpus::DocumentContent\">DocumentContent</a>&lt;'a&gt;",0],["impl&lt;'a&gt; <a class=\"trait\" href=\"https://docs.rs/serde_core/1.0.229/serde_core/ser/trait.Serialize.html\" title=\"trait serde_core::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Entry.html\" title=\"struct serenade_rangular_mcp::corpus::Entry\">Entry</a>&lt;'a&gt;",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1673]}

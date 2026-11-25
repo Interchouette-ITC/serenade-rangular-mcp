@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["serenade_rangular_mcp",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.100.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/server/struct.DocsServer.html\" title=\"struct serenade_rangular_mcp::server::DocsServer\">DocsServer</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.100.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Document.html\" title=\"struct serenade_rangular_mcp::corpus::Document\">Document</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.100.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Product.html\" title=\"struct serenade_rangular_mcp::corpus::Product\">Product</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.100.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"enum\" href=\"serenade_rangular_mcp/server/enum.Profile.html\" title=\"enum serenade_rangular_mcp::server::Profile\">Profile</a>",0],["impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.100.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"serenade_rangular_mcp/corpus/struct.Entry.html\" title=\"struct serenade_rangular_mcp::corpus::Entry\">Entry</a>&lt;'a&gt;",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1527]}

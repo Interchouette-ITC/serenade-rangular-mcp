@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["check_published_sources","fetch","include_source","is_example_manifest","latest_release","main","refresh_product","resolve_commit","safe_path","update_parser","validate_source"],"struct":["Inventory","Source"]};
