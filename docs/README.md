@@ -24,9 +24,9 @@ Hub images for both, and `latest` and the crate only for stable releases.
 Crate publication requires the `CARGO_REGISTRY_TOKEN` secret in the
 `crates-io` environment. To retry an existing published release, dispatch the
 current workflow with the published tag as its input. The separate
-dev workflow targets only `:dev`. Both image workflows require Docker Hub
-`DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets and GHCR package permissions;
-their presence and access must be verified before running the workflows.
+dev workflow targets only `:dev`. Images target Docker Hub and the personal,
+Interchouette and Interchouette-ITC GHCR namespaces. See
+[Docker image guidance](../docker/README.md) for registry secrets and Make targets.
 
 The binary uses the `serenade`, `rangular` or `all` profile (`all` by default).
 Local stdio exposes project actions: they can create files and run Cargo,

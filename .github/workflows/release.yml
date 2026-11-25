@@ -13,6 +13,9 @@ on:
 permissions:
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: release-${{ github.event.release.tag_name || inputs.tag }}
   cancel-in-progress: false
@@ -181,28 +184,32 @@ jobs:
         with:
           ref: ${{ needs.build.outputs.commit }}
           persist-credentials: false
-      - uses: docker/login-action@v4
+      - uses: docker/setup-buildx-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          driver: docker
+      - run: make docker-build-release
+      - if: needs.build.outputs.prerelease == 'false'
+        run: make docker-tag-latest
       - uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: docker/metadata-action@v6
-        id: metadata
+      - run: make docker-push-release-hub
+      - if: needs.build.outputs.prerelease == 'false'
+        run: make docker-push-latest-hub
+      - uses: docker/login-action@v4
         with:
-          images: |
-            ghcr.io/interchouette-itc/serenade-rangular-mcp
-            interchouette/serenade-rangular-mcp
-          flavor: latest=false
-          tags: |
-            type=raw,value=${{ needs.build.outputs.tag }}
-            type=raw,value=latest,enable=${{ needs.build.outputs.prerelease == 'false' }}
-      - uses: docker/build-push-action@v7
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
+      - run: make docker-push-release-ghcr-personal
+      - if: needs.build.outputs.prerelease == 'false'
+        run: make docker-push-latest-ghcr-personal
+      - uses: docker/login-action@v4
         with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: ${{ steps.metadata.outputs.tags }}
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME_ITC }}
+          password: ${{ secrets.GHCR_PAT_ITC }}
+      - run: make docker-push-release-ghcr-itc
+      - if: needs.build.outputs.prerelease == 'false'
+        run: make docker-push-latest-ghcr-itc

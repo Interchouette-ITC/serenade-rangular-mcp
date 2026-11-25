@@ -23,8 +23,9 @@ Publication is not implied by this documentation.
    ```
 
 4. Configure the `crates-io` environment with `CARGO_REGISTRY_TOKEN` for a
-   stable release. Image jobs need `DOCKER_USERNAME` and `DOCKER_PASSWORD`
-   and GitHub Packages write permission. Codecov uses `CODECOV_TOKEN` when
+   stable release. Image jobs need the Docker Hub and personal and
+   Interchouette GHCR credentials described in
+   [docker/README.md](../docker/README.md). Codecov uses `CODECOV_TOKEN` when
    required by the repository's Codecov configuration.
 
 ## Release workflow
@@ -37,8 +38,8 @@ with build metadata (`+`) are rejected.
   executable and its SHA-256 file.
 - Windows x86_64 and macOS Apple silicon executables and checksums are built
   and uploaded by the platform matrix.
-- Images are built for GHCR and Docker Hub with the `v<version>` tag.
-  Stable releases also receive `latest`.
+- Images are built for Docker Hub and all three GHCR namespaces with the
+  `<version>` tag. Stable releases also receive `latest`.
 - Stable releases publish the crate to crates.io. The workflow checks the
   registry first and skips a version that is already published.
 

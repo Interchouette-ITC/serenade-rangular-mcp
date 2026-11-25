@@ -14,7 +14,7 @@ authors = ["Interchouette"]
 repository = "https://github.com/Interchouette-ITC/serenade-rangular-mcp"
 homepage = "https://docs.serenade.rs"
 license = "Apache-2.0"
-include = ["src/**", "tests/**", "build.rs", "Cargo.toml", "corpus/**", "docs/**", "LICENSE"]
+include = ["src/**", "tests/**", "build.rs", "Cargo.toml", "corpus/**", "docs/**", "docker/README.md", "LICENSE"]
 
 [dependencies]
 anyhow = "1"

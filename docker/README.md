@@ -14,16 +14,27 @@ The image defaults to `mcp.serenade.rs`; override this for other deployments.
 The server rejects browser Origin headers. See the [MCP guide](../docs/README.md)
 for transport and security details.
 
-The release workflow targets version tags on
-`interchouette/serenade-rangular-mcp` and
-`ghcr.io/interchouette-itc/serenade-rangular-mcp`. Stable releases also target
-`latest`; the separate dev workflow targets only `dev`. The workflows require
-Docker Hub's `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets and GHCR package
-write access. These destinations must not be presented as published until
-their workflows succeed and the images are verified.
+Image destinations:
 
-`make docker-build-dev` tags both registries with `dev`;
-`make docker-build-release` tags both with the Cargo version prefixed by `v`.
-Use the corresponding per-registry push targets from `make help` after
-authenticating. `make docker-tag-latest` and the `docker-push-latest-*`
+| Registry | Image |
+| --- | --- |
+| Docker Hub | `interchouette/serenade-rangular-mcp` |
+| Personal GHCR | `ghcr.io/groussac/serenade-rangular-mcp` |
+| Interchouette GHCR | `ghcr.io/interchouette/serenade-rangular-mcp` |
+| Interchouette-ITC GHCR | `ghcr.io/interchouette-itc/serenade-rangular-mcp` |
+
+The dev workflow builds and pushes `:dev`. The release workflow builds and
+pushes `:<version>`; stable releases also push `:latest`. A prerelease does
+not update `:latest`. The version is the Cargo version without the `v`
+prefix used on GitHub release tags.
+
+Workflows require Docker Hub's `DOCKER_USERNAME` and `DOCKER_PASSWORD`,
+personal GHCR's `GHCR_USERNAME` and `GHCR_PAT`, and Interchouette GHCR's
+`GHCR_USERNAME_ITC` and `GHCR_PAT_ITC` secrets. The respective accounts need
+permission to publish each package. A configured destination is not proof of
+a successful push or public visibility.
+
+`make docker-build-dev` and `make docker-build-release` build and tag all four
+images. Use the per-registry push targets from `make help` after authenticating
+to each registry. `make docker-tag-latest` and the `docker-push-latest-*`
 targets are for stable releases only.
