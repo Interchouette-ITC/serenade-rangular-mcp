@@ -34,7 +34,7 @@ pub struct SearchArgs {
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct GetArgs {
-    /// Stable document ID returned by list_docs or search_docs.
+    /// Stable document ID returned by `list_docs` or `search_docs`.
     id: String,
     /// Heading ID when reading a section of a document.
     section: Option<String>,

@@ -53,16 +53,23 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
     ];
     if local {
         expected.extend(["run_cargo_task", "scaffold_serenade_app"]);
-        expected.sort();
+        expected.sort_unstable();
     }
     assert_eq!(names, expected);
+    exercise_search(client).await?;
+    exercise_guides(client).await?;
+    exercise_documents(client).await?;
+    exercise_examples(client).await?;
+    exercise_validation(client).await?;
+    exercise_resources(client).await?;
+    Ok(names)
+}
 
+async fn exercise_search(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     let search = call(client, "search_docs", json!({"query":"serenade-trunk"})).await?;
-    assert!(
-        !search["items"]
-            .as_array()
-            .context("search results")?
-            .is_empty()
+    assert_ne!(
+        search["items"].as_array().context("search results")?.len(),
+        0
     );
     assert_eq!(
         search,
@@ -74,7 +81,7 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
         json!({"query":"rangular-build","product":"rangular"}),
     )
     .await?;
-    assert!(!rangular["items"].as_array().unwrap().is_empty());
+    assert_ne!(rangular["items"].as_array().unwrap().len(), 0);
     let natural = call(
         client,
         "search_docs",
@@ -91,6 +98,39 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
                 id.contains("FRONT-MODES") || id.contains("choose-your-mode")
             })
     );
+    for (query, product, expected) in [
+        (
+            "how to apply a recipe",
+            "serenade",
+            "serenade/docs-dev/RECIPES.md",
+        ),
+        (
+            "ssg prerender",
+            "serenade",
+            "serenade/docs-dev/FRONT-MODES.md",
+        ),
+        (
+            "rangular-build component",
+            "rangular",
+            "rangular/crates/rangular-build/README.md",
+        ),
+    ] {
+        let hits = call(
+            client,
+            "search_docs",
+            json!({"query":query,"product":product,"limit":10}),
+        )
+        .await?;
+        let items = hits["items"].as_array().context("ranked search results")?;
+        assert!(
+            items.iter().any(|hit| hit["document"]["id"] == expected),
+            "{query}: {items:?}"
+        );
+    }
+    Ok(())
+}
+
+async fn exercise_guides(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     for (task, action, source) in [
         ("create_app", "serenade new", "serenade/docs-dev/RECIPES.md"),
         ("html", "make html", "serenade/examples/demo-html/README.md"),
@@ -135,6 +175,20 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
                 .iter()
                 .any(|doc| { doc["id"] == source && doc["source_url"].as_str().is_some() })
         );
+        for source in guide["sources"].as_array().context("guide sources")? {
+            let id = source["id"].as_str().context("source ID")?;
+            let doc = call(client, "get_doc", json!({"id": id})).await?;
+            assert_eq!(doc["document"]["id"], id);
+            assert!(
+                doc["markdown"]
+                    .as_str()
+                    .is_some_and(|text| !text.is_empty())
+                    || doc["sections"]
+                        .as_array()
+                        .is_some_and(|sections| !sections.is_empty()),
+                "source {id} has no readable content"
+            );
+        }
     }
     let inspection = call(
         client,
@@ -156,6 +210,10 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
                 .unwrap()
                 .contains("build-dependencies")
     }));
+    Ok(())
+}
+
+async fn exercise_documents(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     for id in [
         "serenade/guides/how-to/agent-mcp.md",
         "serenade/guides/concepts/index.md",
@@ -166,6 +224,18 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
     ] {
         let doc = call(client, "get_doc", json!({"id": id})).await?;
         assert_eq!(doc["document"]["id"], id);
+    }
+    let agent_guide = call(
+        client,
+        "get_doc",
+        json!({"id":"serenade/guides/how-to/agent-mcp.md"}),
+    )
+    .await?;
+    let agent_markdown = agent_guide["markdown"].as_str().context("agent guide")?;
+    assert!(agent_markdown.contains("cargo install --locked serenade-rangular-mcp"));
+    assert!(!agent_markdown.contains("cargo install --locked --path"));
+    if let Some(note) = agent_guide["document"]["source_note"].as_str() {
+        assert!(note.contains("differs from the recorded Serenade revision"));
     }
     let first_page = call(client, "list_docs", json!({"limit":1})).await?;
     let next_page = call(
@@ -206,6 +276,23 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
         .context("Rangular guide")?;
     assert!(guide.contains("rangular = \"1.1.0\""));
     assert!(guide.contains("rangular-build = \"1.1.0\""));
+    let section = doc["sections"][0]["id"].as_str().context("section ID")?;
+    let section_content = call(
+        client,
+        "get_doc",
+        json!({"id":"serenade/docs-dev/RECIPES.md","section":section}),
+    )
+    .await?;
+    assert!(
+        section_content["markdown"]
+            .as_str()
+            .unwrap()
+            .starts_with('#')
+    );
+    Ok(())
+}
+
+async fn exercise_examples(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     for (id, expected) in [
         ("serenade/examples/demo-app/src/main.rs", "FrameworkBundle"),
         ("serenade/examples/demo-html/src/main.rs", "app::run"),
@@ -280,19 +367,10 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
             .await
             .is_err()
     );
-    let section = doc["sections"][0]["id"].as_str().context("section ID")?;
-    let section_content = call(
-        client,
-        "get_doc",
-        json!({"id":"serenade/docs-dev/RECIPES.md","section":section}),
-    )
-    .await?;
-    assert!(
-        section_content["markdown"]
-            .as_str()
-            .unwrap()
-            .starts_with('#')
-    );
+    Ok(())
+}
+
+async fn exercise_validation(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     let good = call(
         client,
         "validate_rangular_template",
@@ -314,11 +392,9 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
     )
     .await?;
     assert_eq!(bad["valid"], false);
-    assert!(
-        !bad["diagnostics"]
-            .as_array()
-            .context("diagnostics")?
-            .is_empty()
+    assert_ne!(
+        bad["diagnostics"].as_array().context("diagnostics")?.len(),
+        0
     );
     for (name, args) in [
         ("search_docs", json!({"query":" "})),
@@ -348,6 +424,10 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
     .await?;
     assert_eq!(many["diagnostics"].as_array().unwrap().len(), 100);
     assert_eq!(many["diagnostics_truncated"], true);
+    Ok(())
+}
+
+async fn exercise_resources(client: &Peer<RoleClient>) -> anyhow::Result<()> {
     let resources = client.list_all_resources().await?;
     assert!(
         resources
@@ -392,7 +472,7 @@ async fn exercise(client: &Peer<RoleClient>, local: bool) -> anyhow::Result<Vec<
             .await
             .is_err()
     );
-    Ok(names)
+    Ok(())
 }
 
 #[tokio::test]
@@ -604,6 +684,65 @@ fn http_status(
         .parse()?)
 }
 
+async fn exercise_product_profile(client: &Peer<RoleClient>, product: &str) -> anyhow::Result<()> {
+    let (tasks, expected_source, other) = match product {
+        "serenade" => (
+            &["create_app", "html", "spa", "ssg", "universal"][..],
+            "serenade/docs-dev/FRONT-MODES.md",
+            "rangular",
+        ),
+        "rangular" => (
+            &["rangular_component"][..],
+            "rangular/crates/rangular-build/README.md",
+            "serenade",
+        ),
+        _ => bail!("unknown test profile: {product}"),
+    };
+    for task in tasks {
+        let guide = call(client, "get_coding_guide", json!({"task": task})).await?;
+        assert!(
+            !guide["steps"].as_array().context("guide steps")?.is_empty(),
+            "missing steps for {task}"
+        );
+        assert!(
+            guide["sources"]
+                .as_array()
+                .context("guide sources")?
+                .iter()
+                .all(|source| source["product"] == product)
+        );
+    }
+    let doc = call(client, "get_doc", json!({"id": expected_source})).await?;
+    assert_eq!(doc["document"]["product"], product);
+    assert!(
+        client
+            .call_tool(
+                CallToolRequestParams::new("list_docs")
+                    .with_arguments(json!({"product": other}).as_object().unwrap().clone())
+            )
+            .await
+            .is_err()
+    );
+    if product == "rangular" {
+        let good = call(
+            client,
+            "validate_rangular_template",
+            json!({"source": "<p>Hello</p>"}),
+        )
+        .await?;
+        let bad = call(
+            client,
+            "validate_rangular_template",
+            json!({"source": "<div>"}),
+        )
+        .await?;
+        assert_eq!(good["valid"], true);
+        assert_eq!(bad["valid"], false);
+        assert!(bad["diagnostics"][0]["line"].as_u64().is_some());
+    }
+    Ok(())
+}
+
 #[tokio::test]
 async fn serenade_profile_hides_rangular_tools_and_content() -> anyhow::Result<()> {
     let mut command = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"));
@@ -611,6 +750,7 @@ async fn serenade_profile_hides_rangular_tools_and_content() -> anyhow::Result<(
         .args(["--profile", "serenade"])
         .current_dir(std::env::temp_dir());
     let client = ().serve(TokioChildProcess::new(command)?).await?;
+    exercise_product_profile(client.peer(), "serenade").await?;
     let tools = client.list_all_tools().await?;
     assert!(
         !tools
@@ -660,6 +800,7 @@ async fn rangular_profile_hides_serenade_content() -> anyhow::Result<()> {
     let mut command = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"));
     command.args(["--profile", "rangular"]);
     let client = ().serve(TokioChildProcess::new(command)?).await?;
+    exercise_product_profile(client.peer(), "rangular").await?;
     let tools = client.list_all_tools().await?;
     assert!(
         !tools
@@ -668,7 +809,7 @@ async fn rangular_profile_hides_serenade_content() -> anyhow::Result<()> {
     );
     assert!(tools.iter().any(|tool| tool.name == "run_cargo_task"));
     let resources = client.list_all_resources().await?;
-    assert!(!resources.is_empty());
+    assert_ne!(resources.len(), 0);
     assert!(
         resources
             .iter()
@@ -697,6 +838,44 @@ async fn rangular_profile_hides_serenade_content() -> anyhow::Result<()> {
             .is_err()
     );
     client.cancel().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn http_product_profiles_serve_relevant_guidance() -> anyhow::Result<()> {
+    for profile in ["serenade", "rangular"] {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+        let address = listener.local_addr()?;
+        drop(listener);
+        let mut process = Command::new(env!("CARGO_BIN_EXE_serenade-rangular-mcp"))
+            .current_dir(std::env::temp_dir())
+            .args([
+                "--transport",
+                "http",
+                "--port",
+                &address.port().to_string(),
+                "--profile",
+                profile,
+            ])
+            .kill_on_drop(true)
+            .spawn()?;
+        wait_ready(address, &mut process).await?;
+        let client = ()
+            .serve(StreamableHttpClientTransport::from_uri(format!(
+                "http://{address}/mcp"
+            )))
+            .await?;
+        exercise_product_profile(client.peer(), profile).await?;
+        let tools = client.list_all_tools().await?;
+        assert!(
+            !tools.iter().any(|tool| {
+                tool.name == "run_cargo_task" || tool.name == "scaffold_serenade_app"
+            })
+        );
+        client.cancel().await?;
+        process.kill().await?;
+        process.wait().await?;
+    }
     Ok(())
 }
 

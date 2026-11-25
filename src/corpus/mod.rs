@@ -25,6 +25,8 @@ pub struct Document {
     pub path: String,
     pub title: String,
     pub sha256: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_note: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -61,6 +63,10 @@ pub struct DocumentContent<'a> {
     pub next_offset: Option<usize>,
 }
 
+/// Return the embedded corpus manifest.
+///
+/// # Panics
+/// Panics if the embedded manifest is malformed.
 pub fn manifest() -> &'static Manifest {
     MANIFEST.get_or_init(|| {
         serde_json::from_str(include_str!("../../corpus/manifest.json"))
@@ -68,6 +74,11 @@ pub fn manifest() -> &'static Manifest {
     })
 }
 
+/// Return the embedded text for a manifest document.
+///
+/// # Panics
+/// Panics if the document is missing or is not UTF-8.
+#[must_use]
 pub fn text(document: &Document) -> &'static str {
     DOCUMENTS
         .get_file(&document.id)
@@ -75,6 +86,7 @@ pub fn text(document: &Document) -> &'static str {
         .expect("validated embedded document")
 }
 
+#[must_use]
 pub fn entry(document: &Document) -> Entry<'_> {
     let version = &manifest().products[&document.product];
     Entry {
@@ -88,6 +100,7 @@ pub fn entry(document: &Document) -> Entry<'_> {
     }
 }
 
+#[must_use]
 pub fn find(id: &str) -> Option<&'static Document> {
     manifest()
         .documents
@@ -146,6 +159,10 @@ fn sections(source: &str) -> Vec<Section> {
     headings
 }
 
+/// Read a document or one of its sections.
+///
+/// # Errors
+/// Returns an error for an unknown section or an invalid byte offset.
 pub fn content<'a>(
     document: &'a Document,
     section_id: Option<&str>,

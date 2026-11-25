@@ -1,4 +1,4 @@
-use std::{env, fs, path::Path};
+use std::{env, fmt::Write as _, fs, path::Path};
 
 use sha2::{Digest, Sha256};
 
@@ -23,10 +23,13 @@ fn main() {
         );
         let path = Path::new("corpus/documents").join(id);
         let contents = fs::read(&path).expect("missing corpus document");
-        let actual: String = Sha256::digest(contents)
-            .iter()
-            .map(|byte| format!("{byte:02x}"))
-            .collect();
+        let actual =
+            Sha256::digest(contents)
+                .iter()
+                .fold(String::with_capacity(64), |mut output, byte| {
+                    write!(output, "{byte:02x}").expect("writing to a string cannot fail");
+                    output
+                });
         assert_eq!(
             Some(actual.as_str()),
             document["sha256"].as_str(),

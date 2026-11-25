@@ -1,5 +1,6 @@
 use std::{
     collections::BTreeMap,
+    fmt::Write as _,
     fs,
     io::Read,
     path::{Component, Path},
@@ -85,6 +86,12 @@ fn is_example_manifest(path: &str) -> bool {
 }
 
 fn include_source(product: &str, path: &str) -> bool {
+    if path.starts_with("docs/api-rust/")
+        || path.starts_with("docs/astro/src/content/docs/source-guides/")
+        || path == "docs/astro/src/content/docs/components/catalog.md"
+    {
+        return false;
+    }
     let source_path = Path::new(path);
     let name = source_path.file_name().and_then(|value| value.to_str());
     let repository_administration = matches!(
@@ -119,13 +126,28 @@ fn include_source(product: &str, path: &str) -> bool {
         "rangular" => path.starts_with("demo-leptos/") || path.starts_with("demo-tauri/"),
         _ => false,
     };
+    let generated_example = example
+        && source_path.components().any(|component| {
+            matches!(component, Component::Normal(name) if matches!(name.to_str(), Some("dist" | "target" | "node_modules")))
+        });
     (markdown && (documentation || crate_readme))
         || (example
+            && !generated_example
             && !is_example_manifest(path)
             && matches!(
                 extension,
                 Some("md" | "rs" | "html" | "scss" | "css" | "js" | "json" | "toml")
             ))
+}
+
+fn validate_source(product: &str, path: &str, text: &str) -> anyhow::Result<()> {
+    if product == "serenade" && path == "docs/astro/src/content/docs/how-to/agent-mcp.md" {
+        ensure!(
+            text.contains("cargo install --locked serenade-rangular-mcp"),
+            "upstream agent guide lacks the release install command; refresh after the guide is updated"
+        );
+    }
+    Ok(())
 }
 
 fn check_published_sources(root: &Path, revision: &str, version: &str) -> anyhow::Result<()> {
@@ -243,6 +265,7 @@ fn refresh_product(
         let mut data = Vec::new();
         item.read_to_end(&mut data)?;
         let text = std::str::from_utf8(&data).with_context(|| format!("{path} is not UTF-8"))?;
+        validate_source(product, path, text)?;
         let title = text
             .lines()
             .find_map(|line| line.strip_prefix("# "))
@@ -257,12 +280,19 @@ fn refresh_product(
             .strip_prefix("docs/astro/src/content/docs/")
             .map_or_else(|| path.to_owned(), |relative| format!("guides/{relative}"));
         let id = format!("{product}/{corpus_path}");
+        let hash =
+            Sha256::digest(&data)
+                .iter()
+                .fold(String::with_capacity(64), |mut output, byte| {
+                    write!(output, "{byte:02x}").expect("writing to a string cannot fail");
+                    output
+                });
         inventory.documents.push(json!({
             "id": id,
             "product": product,
             "path": path,
             "title": title,
-            "sha256": Sha256::digest(&data).iter().map(|byte| format!("{byte:02x}")).collect::<String>()
+            "sha256": hash
         }));
         inventory.contents.insert(id, data);
     }
@@ -310,11 +340,11 @@ fn main() -> anyhow::Result<()> {
         .context("missing Rangular release tag")?
         .strip_prefix('v')
         .context("invalid Rangular tag")?;
-    update_parser(root, version)?;
-    check_published_sources(root, &parser_release.revision, version)?;
     let mut inventory = Inventory::default();
     refresh_product("serenade", "Serenade", &serenade, &mut inventory)?;
     refresh_product("rangular", "rangular", &rangular, &mut inventory)?;
+    update_parser(root, version)?;
+    check_published_sources(root, &parser_release.revision, version)?;
     let Inventory {
         products,
         mut documents,
@@ -361,7 +391,7 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{include_source, is_example_manifest, update_parser};
+    use super::{include_source, is_example_manifest, update_parser, validate_source};
     use std::{fs, path::Path};
 
     #[test]
@@ -371,6 +401,22 @@ mod tests {
         ));
         assert!(is_example_manifest("demo-leptos/Cargo.toml"));
         assert!(!is_example_manifest("examples/demo-app/src/main.rs"));
+    }
+
+    #[test]
+    fn refresh_rejects_outdated_agent_install_guidance() {
+        let path = "docs/astro/src/content/docs/how-to/agent-mcp.md";
+        assert!(
+            validate_source("serenade", path, "cargo install --locked --path /checkout").is_err()
+        );
+        assert!(
+            validate_source(
+                "serenade",
+                path,
+                "cargo install --locked serenade-rangular-mcp"
+            )
+            .is_ok()
+        );
     }
 
     #[test]
@@ -410,6 +456,36 @@ mod tests {
             }
             assert!(!include_source(product, "docs/SECURITY.md"));
             assert!(!include_source(product, "docs/brand/README.md"));
+        }
+    }
+
+    #[test]
+    fn excludes_generated_documentation() {
+        for product in ["serenade", "rangular"] {
+            assert!(!include_source(
+                product,
+                "docs/api-rust/static.files/LICENSE.md"
+            ));
+        }
+        assert!(!include_source(
+            "serenade",
+            "docs/astro/src/content/docs/source-guides/example.md"
+        ));
+        assert!(!include_source(
+            "serenade",
+            "docs/astro/src/content/docs/components/catalog.md"
+        ));
+        for path in [
+            "examples/demo-monorepo/apps/demo-spa/dist/index.html",
+            "examples/demo-html/target/generated.rs",
+            "demo-leptos/node_modules/dependency/index.js",
+        ] {
+            let product = if path.starts_with("examples/") {
+                "serenade"
+            } else {
+                "rangular"
+            };
+            assert!(!include_source(product, path), "{product}: {path}");
         }
     }
 

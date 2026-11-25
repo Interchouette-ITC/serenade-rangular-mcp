@@ -12,8 +12,16 @@ cargo install --locked serenade-rangular-mcp
 ```
 
 Maintainers can verify the package without uploading it using `make publish-check`
-(`PUBLISH_CHECK_ARGS=--allow-dirty` for local changes). The stable release workflow
-publishes using the `CARGO_REGISTRY_TOKEN` secret in the `crates-io` environment.
+(`PUBLISH_CHECK_ARGS=--allow-dirty` for local changes). The release workflow
+is configured to build version-labelled Linux, Windows and macOS binaries and checksums for
+prereleases and stable releases, and to publish version-tagged GHCR and Docker
+Hub images for both, and `latest` and the crate only for stable releases.
+Crate publication requires the `CARGO_REGISTRY_TOKEN` secret in the
+`crates-io` environment. To retry an existing published release, dispatch the
+current workflow with the published tag as its input. The separate
+dev workflow targets only `:dev`. Both image workflows require Docker Hub
+`DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets and GHCR package permissions;
+their presence and access must be verified before running the workflows.
 
 The binary uses the `serenade`, `rangular` or `all` profile (`all` by default).
 Local stdio exposes project actions: they can create files and run Cargo,
@@ -108,7 +116,23 @@ parser is independent of the development documentation.
 The manifest records source paths, versions,
 revisions and content hashes. Builds verify those hashes; installed binaries
 do not update themselves.
+The embedded agent guide has a local correction marked in its result metadata.
+Refresh rejects the old checkout-based guidance until the corrected upstream
+guide is available on the selected development branch.
 
 The embedded upstream content is sourced from Serenade and Rangular, each
 distributed under Apache-2.0. Original source locations and revisions are
 preserved in the corpus manifest.
+
+## Development checks
+
+Run `make help` for build, quality, image and version targets. `make ci` runs
+format checking, strict Clippy (`all`, `pedantic` and `nursery`), tests,
+rustdoc, audit, deny and machete. Install `cargo-audit`, `cargo-deny` and
+`cargo-machete` for that gate. `make outdated`, coverage and version targets
+also require `cargo-outdated`, `cargo-llvm-cov` (plus `llvm-tools-preview`),
+`cargo-tarpaulin` or `cargo-edit`, respectively.
+
+The dependency policy records the `chrono` unmaintained advisory: it is
+transitive through rmcp and schemars and has no compatible maintained release.
+`make audit` continues to report this warning.

@@ -57,10 +57,12 @@ pub struct DocsServer {
 }
 
 impl DocsServer {
+    #[must_use]
     pub fn new(profile: Profile) -> Self {
         Self::with_local_actions(profile, false)
     }
 
+    #[must_use]
     pub fn with_local_actions(profile: Profile, local_actions: bool) -> Self {
         let mut tool_router = Self::tool_router();
         if profile == Profile::Serenade {
@@ -84,6 +86,10 @@ impl DocsServer {
     }
 }
 
+#[expect(
+    clippy::unused_async_trait_impl,
+    reason = "rmcp's tool handler macro generates async trait methods"
+)]
 #[tool_handler(router = self.tool_router)]
 impl ServerHandler for DocsServer {
     fn get_info(&self) -> ServerConfig {
@@ -150,11 +156,16 @@ impl ServerHandler for DocsServer {
                         doc.product,
                         corpus::manifest().products[&doc.product].revision
                     ))
-                    .with_mime_type(if doc.path.ends_with(".md") {
-                        "text/markdown"
-                    } else {
-                        "text/plain"
-                    })
+                    .with_mime_type(
+                        if std::path::Path::new(&doc.path)
+                            .extension()
+                            .is_some_and(|ext| ext.eq_ignore_ascii_case("md"))
+                        {
+                            "text/markdown"
+                        } else {
+                            "text/plain"
+                        },
+                    )
             })
             .collect();
         Ok(ListResourcesResult::with_all_items(resources))
@@ -179,7 +190,10 @@ impl ServerHandler for DocsServer {
         })?;
         Ok(ReadResourceResult::new(vec![
             ResourceContents::text(text, request.uri).with_mime_type(
-                if doc.path.ends_with(".md") {
+                if std::path::Path::new(&doc.path)
+                    .extension()
+                    .is_some_and(|ext| ext.eq_ignore_ascii_case("md"))
+                {
                     "text/markdown"
                 } else {
                     "text/plain"

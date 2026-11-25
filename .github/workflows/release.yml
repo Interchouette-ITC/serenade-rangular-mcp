@@ -3,56 +3,171 @@ name: release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published release tag to rebuild
+        required: true
+        type: string
 
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
   build:
-    if: ${{ !github.event.release.prerelease }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      prerelease: ${{ steps.release.outputs.prerelease }}
+      tag: ${{ steps.release.outputs.tag }}
+      commit: ${{ steps.release.outputs.commit }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - name: Validate release version
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit,cargo-deny,cargo-machete
+      - name: Validate release
+        id: release
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
+          set -euo pipefail
           VERSION="$(cargo metadata --locked --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "serenade-rangular-mcp") | .version')"
-          test "$RELEASE_TAG" = "v$VERSION"
+          test "$TAG" = "v$VERSION" || { echo "Tag does not match Cargo version $VERSION"; exit 1; }
+          RELEASE="$(gh release view "$TAG" --json isDraft,isPrerelease)"
+          test "$(jq -r '.isDraft' <<<"$RELEASE")" = false || { echo "Release is a draft"; exit 1; }
+          PRERELEASE="$(jq -r '.isPrerelease' <<<"$RELEASE")"
+          case "$VERSION" in
+            *+*) echo "Build metadata is not supported in Docker tags"; exit 1 ;;
+            *-*) test "$PRERELEASE" = true || { echo "Prerelease versions must be marked as prereleases"; exit 1; } ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - run: make ci
       - run: cargo build --release --locked --bin serenade-rangular-mcp
-      - uses: softprops/action-gh-release@v2
+      - name: Package and smoke-test binary
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          NAME="serenade-rangular-mcp-${TAG}-x86_64-unknown-linux-gnu"
+          cp target/release/serenade-rangular-mcp "dist/$NAME"
+          "dist/$NAME" --version
+          cd dist
+          sha256sum "$NAME" > "$NAME.sha256"
+          sha256sum -c "$NAME.sha256"
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: gh release upload "$TAG" dist/* --clobber
+
+  platform-assets:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            extension: .exe
+          - os: macos-15
+            target: aarch64-apple-darwin
+            extension: ""
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
         with:
-          files: target/release/serenade-rangular-mcp
-          fail_on_unmatched_files: true
+          ref: ${{ needs.build.outputs.commit }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Verify target
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          test "$(rustc -vV | sed -n 's/^host: //p')" = "$TARGET"
+      - run: cargo build --release --locked --bin serenade-rangular-mcp
+      - name: Package and smoke-test binary
+        env:
+          TAG: ${{ needs.build.outputs.tag }}
+          TARGET: ${{ matrix.target }}
+          EXTENSION: ${{ matrix.extension }}
+          RUNNER_OS: ${{ runner.os }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          NAME="serenade-rangular-mcp-${TAG}-${TARGET}${EXTENSION}"
+          cp "target/release/serenade-rangular-mcp${EXTENSION}" "dist/$NAME"
+          "dist/$NAME" --version
+          cd dist
+          if [ "$RUNNER_OS" = macOS ]; then
+            shasum -a 256 "$NAME" > "$NAME.sha256"
+            shasum -a 256 -c "$NAME.sha256"
+          else
+            sha256sum "$NAME" > "$NAME.sha256"
+            sha256sum -c "$NAME.sha256"
+          fi
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.build.outputs.tag }}
+        run: gh release upload "$TAG" dist/* --clobber
 
   publish-crate:
-    if: ${{ !github.event.release.prerelease }}
+    if: needs.build.outputs.prerelease == 'false'
     needs: build
     runs-on: ubuntu-latest
     environment: crates-io
     concurrency:
       group: crates-io-publish
       cancel-in-progress: false
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.build.outputs.commit }}
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: cargo publish --locked
+        run: |
+          set -euo pipefail
+          VERSION="$(cargo metadata --locked --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "serenade-rangular-mcp") | .version')"
+          RESPONSE="$(mktemp)"
+          trap 'rm -f "$RESPONSE"' EXIT
+          STATUS="$(curl --silent --show-error --location -A 'serenade-rangular-mcp release workflow' -o "$RESPONSE" -w '%{http_code}' "https://crates.io/api/v1/crates/serenade-rangular-mcp/$VERSION")"
+          case "$STATUS" in
+            200) echo "Version $VERSION is already published; skipping." ;;
+            404) cargo publish --locked ;;
+            *) echo "Cannot check crates.io publication status (HTTP $STATUS)"; exit 1 ;;
+          esac
 
   image:
-    if: ${{ !github.event.release.prerelease }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -60,14 +175,31 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.build.outputs.commit }}
+          persist-credentials: false
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: docker/metadata-action@v5
+        id: metadata
+        with:
+          images: |
+            ghcr.io/interchouette-itc/serenade-rangular-mcp
+            interchouette/serenade-rangular-mcp
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ needs.build.outputs.tag }}
+            type=raw,value=latest,enable=${{ needs.build.outputs.prerelease == 'false' }}
       - uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: ghcr.io/interchouette-itc/serenade-rangular-mcp:${{ github.event.release.tag_name }}
+          tags: ${{ steps.metadata.outputs.tags }}

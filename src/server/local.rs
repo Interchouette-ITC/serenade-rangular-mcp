@@ -110,8 +110,12 @@ async fn run(mut command: Command) -> Result<(bool, Value), ErrorData> {
         .stderr
         .take()
         .ok_or_else(|| ErrorData::internal_error("command stderr unavailable", None))?;
-    let (stdout, stderr, status) = tokio::try_join!(capture(stdout), capture(stderr), child.wait())
-        .map_err(|error| ErrorData::internal_error(format!("command failed: {error}"), None))?;
+    let (stdout, stderr, status) = tokio::try_join!(
+        Box::pin(capture(stdout)),
+        Box::pin(capture(stderr)),
+        child.wait()
+    )
+    .map_err(|error| ErrorData::internal_error(format!("command failed: {error}"), None))?;
     Ok((
         status.success(),
         json!({

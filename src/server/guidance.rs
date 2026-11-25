@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 use super::Profile;
 use crate::corpus;
 
-#[derive(Debug, Deserialize, JsonSchema)]
+#[derive(Clone, Copy, Debug, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum CodingTask {
     CreateApp,
@@ -18,8 +18,15 @@ pub enum CodingTask {
     RangularSerenade,
 }
 
-pub fn guide(task: CodingTask, profile: Profile) -> Result<Value, ErrorData> {
-    let (products, summary, steps, sources): (&[&str], &str, &[&str], &[&str]) = match task {
+type GuideDetails = (
+    &'static [&'static str],
+    &'static str,
+    &'static [&'static str],
+    &'static [&'static str],
+);
+
+const fn details(task: CodingTask) -> GuideDetails {
+    match task {
         CodingTask::CreateApp => (
             &["serenade"],
             "Create a standalone Serenade bundle application using published crates.",
@@ -99,24 +106,14 @@ pub fn guide(task: CodingTask, profile: Profile) -> Result<Value, ErrorData> {
                 "serenade/docs-dev/VIEW.md",
             ],
         ),
-        CodingTask::RangularComponent => (
-            &["rangular"],
-            "Add a Rangular AOT component to a Leptos application.",
-            &[
-                "Use the published rangular facade as a dependency and rangular-build as a build dependency; choose the appropriate Leptos CSR, SSR or hydration features.",
-                "Place a component's HTML, optional SCSS and Rust Host under src/components/<name>/; map template values and events through the Host implementation.",
-                "In build.rs call rangular_build::build(rangular_build::Config::new(\"src/components\", \"style/components.css\")); include the generated OUT_DIR/rangular/<name>_view.rs and render the view using HostCell.",
-                "Link the generated stylesheet, build the application and test the component. Use validate_rangular_template for parser diagnostics, not as a substitute for the build.",
-            ],
-            &[
-                "rangular/crates/rangular/README.md",
-                "rangular/crates/rangular-build/README.md",
-                "rangular/docs/SPEC.md",
-                "rangular/demo-leptos/src/components/item_list/item_list.html",
-                "rangular/demo-leptos/src/components/item_list/item_list.rs",
-            ],
-        ),
-        CodingTask::RangularSerenade => (
+        CodingTask::RangularComponent => rangular_details(false),
+        CodingTask::RangularSerenade => rangular_details(true),
+    }
+}
+
+const fn rangular_details(combined: bool) -> GuideDetails {
+    if combined {
+        (
             &["serenade", "rangular"],
             "Use Rangular templates with Serenade complete documents and Leptos.",
             &[
@@ -132,8 +129,30 @@ pub fn guide(task: CodingTask, profile: Profile) -> Result<Value, ErrorData> {
                 "rangular/crates/rangular-build/README.md",
                 "rangular/docs/SPEC.md",
             ],
-        ),
-    };
+        )
+    } else {
+        (
+            &["rangular"],
+            "Add a Rangular AOT component to a Leptos application.",
+            &[
+                "Use the published rangular facade as a dependency and rangular-build as a build dependency; choose the appropriate Leptos CSR, SSR or hydration features.",
+                "Place a component's HTML, optional SCSS and Rust Host under src/components/<name>/; map template values and events through the Host implementation.",
+                "In build.rs call rangular_build::build(rangular_build::Config::new(\"src/components\", \"style/components.css\")); include the generated OUT_DIR/rangular/<name>_view.rs and render the view using HostCell.",
+                "Link the generated stylesheet, build the application and test the component. Use validate_rangular_template for parser diagnostics, not as a substitute for the build.",
+            ],
+            &[
+                "rangular/crates/rangular/README.md",
+                "rangular/crates/rangular-build/README.md",
+                "rangular/docs/SPEC.md",
+                "rangular/demo-leptos/src/components/item_list/item_list.html",
+                "rangular/demo-leptos/src/components/item_list/item_list.rs",
+            ],
+        )
+    }
+}
+
+pub fn guide(task: CodingTask, profile: Profile) -> Result<Value, ErrorData> {
+    let (products, summary, steps, sources) = details(task);
     for product in products {
         if !profile.includes(product) {
             return Err(ErrorData::invalid_params(

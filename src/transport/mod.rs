@@ -18,11 +18,19 @@ use rmcp::{
 
 use crate::server::DocsServer;
 
+/// Serve MCP over standard input and output.
+///
+/// # Errors
+/// Returns an error if the transport or service fails.
 pub async fn stdio(server: DocsServer) -> anyhow::Result<()> {
     server.serve(transport::stdio()).await?.waiting().await?;
     Ok(())
 }
 
+/// Serve read-only MCP over Streamable HTTP.
+///
+/// # Errors
+/// Returns an error if the listener cannot bind or the server fails.
 pub async fn http(
     server: DocsServer,
     address: SocketAddr,
