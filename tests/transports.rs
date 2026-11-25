@@ -92,6 +92,98 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
             .contains("serenade new")
     );
     assert_eq!(doc["document"]["version"]["status"], "development snapshot");
+    let installation = call(
+        client,
+        "get_doc",
+        json!({"id":"serenade/guides/first-steps/installation.md"}),
+    )
+    .await?;
+    assert!(
+        installation["markdown"]
+            .as_str()
+            .context("installation guide")?
+            .contains("cargo install serenade-cli")
+    );
+    let rangular_guide = call(client, "get_doc", json!({"id":"rangular/docs/README.md"})).await?;
+    let guide = rangular_guide["markdown"]
+        .as_str()
+        .context("Rangular guide")?;
+    assert!(guide.contains("rangular = \"1.1.0\""));
+    assert!(guide.contains("rangular-build = \"1.1.0\""));
+    for (id, expected) in [
+        ("serenade/examples/demo-app/src/main.rs", "FrameworkBundle"),
+        ("serenade/examples/demo-html/src/main.rs", "app::run"),
+        (
+            "serenade/examples/demo-monorepo/apps/demo-spa/src/main.rs",
+            "mount_to_body",
+        ),
+        (
+            "serenade/examples/demo-monorepo/apps/demo-ssg/src/bin/prerender.rs",
+            "StaticDocumentWriter",
+        ),
+        (
+            "serenade/examples/demo-universal/libs/demo-contract/src/lib.rs",
+            "HelloResponse",
+        ),
+        (
+            "rangular/demo-leptos/src/components/item_list/item_list.html",
+            "@for (item of items",
+        ),
+        (
+            "rangular/demo-leptos/src/components/two_way/two_way.html",
+            "[(value)]",
+        ),
+        ("rangular/demo-tauri/src/src/lib.rs", "tauri::Builder"),
+    ] {
+        let example = call(client, "get_doc", json!({"id": id})).await?;
+        assert!(
+            example["markdown"]
+                .as_str()
+                .context("example source")?
+                .contains(expected)
+        );
+        assert_eq!(
+            example["document"]["version"]["status"],
+            "development snapshot"
+        );
+    }
+    let search = call(
+        client,
+        "search_docs",
+        json!({"query":"demo-spa mount_to_body","product":"serenade"}),
+    )
+    .await?;
+    assert!(
+        search["items"]
+            .as_array()
+            .context("example search")?
+            .iter()
+            .any(|hit| {
+                hit["document"]["id"] == "serenade/examples/demo-monorepo/apps/demo-spa/src/main.rs"
+            })
+    );
+    let front_modes = call(
+        client,
+        "get_doc",
+        json!({"id":"serenade/docs-dev/FRONT-MODES.md"}),
+    )
+    .await?;
+    let modes = front_modes["markdown"].as_str().context("front modes")?;
+    assert!(!modes.contains("serenade run-many -t"));
+    assert!(modes.contains("serenade-html --all"));
+    assert!(
+        client
+            .call_tool(
+                CallToolRequestParams::new("get_doc").with_arguments(
+                    json!({"id":"serenade/examples/demo-universal/apps/demo-front/Cargo.toml"})
+                        .as_object()
+                        .unwrap()
+                        .clone()
+                )
+            )
+            .await
+            .is_err()
+    );
     let section = doc["sections"][0]["id"].as_str().context("section ID")?;
     let section_content = call(
         client,
@@ -113,6 +205,12 @@ async fn exercise(client: &Peer<RoleClient>) -> anyhow::Result<Vec<String>> {
     .await?;
     assert_eq!(good["valid"], true);
     assert_eq!(good["version"]["version"], "1.1.0");
+    assert_eq!(good["version"]["status"], "crates.io release");
+    assert_eq!(
+        good["documentation_version"]["status"],
+        "development snapshot"
+    );
+    assert!(good["scope"].as_str().unwrap().contains("may differ"));
     let bad = call(
         client,
         "validate_rangular_template",

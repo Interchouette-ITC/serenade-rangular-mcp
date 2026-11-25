@@ -1,10 +1,5 @@
 CARGO ?= cargo +stable
-SERENADE_ROOT ?= ../serenade
-RANGULAR_ROOT ?= ../rangular
-SERENADE_REV ?=
-RANGULAR_REV ?=
-
-.PHONY: build lint test doc ci refresh-docs docker-build
+.PHONY: build lint test doc ci publish-check refresh-docs docker-build
 
 build:
 	$(CARGO) build --locked
@@ -21,10 +16,11 @@ doc:
 
 ci: lint test doc
 
+publish-check:
+	$(CARGO) package --locked $(PUBLISH_CHECK_ARGS)
+
 refresh-docs:
-	$(CARGO) run --locked -p refresh-docs -- --serenade-root "$(SERENADE_ROOT)" \
-		--serenade-revision "$(SERENADE_REV)" --rangular-root "$(RANGULAR_ROOT)" \
-		--rangular-revision "$(RANGULAR_REV)"
+	$(CARGO) run --locked -p refresh-docs
 
 docker-build:
 	docker build -f docker/Dockerfile -t serenade-rangular-mcp .

@@ -5,12 +5,15 @@ agents. One binary supports stdio and Streamable HTTP. Documentation is
 embedded in the binary; the website, source checkouts and network are not
 needed at runtime.
 
-## Build and install
+## Install
 
 ```sh
-make ci
-cargo install --locked --path . --bin serenade-rangular-mcp
+cargo install --locked serenade-rangular-mcp
 ```
+
+Maintainers can verify the package without uploading it using `make publish-check`
+(`PUBLISH_CHECK_ARGS=--allow-dirty` for local changes). The stable release workflow
+publishes using the `CARGO_REGISTRY_TOKEN` secret in the `crates-io` environment.
 
 The binary uses the `serenade`, `rangular` or `all` profile (`all` by default).
 For a stdio client:
@@ -48,41 +51,46 @@ a restart where the client supports it.
 ## Tools and resources
 
 - `list_docs`: browse by product or group, with pagination.
-- `search_docs`: search titles, headings and source text.
+- `search_docs`: search paths, titles, headings and source text.
 - `get_doc`: read a document or a section; large documents return section IDs.
   If a section is still too large, pass `offset: 0` and follow `next_offset`.
 - `validate_rangular_template`: parse component or head template text and
   report up to 100 RANG diagnostics, with the total count and a truncation flag.
-  This is not a full AOT compile or application build.
+  It uses the published crates.io parser, which may differ from the development
+  docs, and reports both versions. This is not a full AOT compile or application build.
 - MCP resources expose the same embedded documents as `docs://<document-id>`.
   Some MCP clients do not expose resources; use `get_doc` instead.
 
 Each result identifies the product, documented version, source revision and
-original source path. The current Rangular corpus and parser use the matching
-`1.1.0` release. Serenade documents a selected development revision, not
-necessarily the latest published release. Agents run the existing `serenade`
+original source path. Both products' documentation tracks their development
+branches and may describe unreleased changes. The corpus records the sources
+embedded when it was last refreshed; it does not fetch updates at runtime.
+Agents run the existing `serenade`
 CLI, `serenade-trunk` and Cargo themselves under their normal permissions.
+The corpus includes text source, configuration and guides for the Serenade
+HTML, SPA, SSG and Universal examples and the Rangular Leptos and Tauri demos.
+Example Cargo manifests and binary assets are not embedded. Use the original
+repository links returned with results to obtain complete runnable projects;
+these examples depend on their source workspaces. For a standalone application,
+start with the installation and recipes guides and use published crates.
 
 ## Refresh the embedded documentation
 
-Update the exact `rangular-parser` crates.io version in `Cargo.toml` to the
-desired release first. Then supply full source commit IDs:
+Refresh fetches the `dev` branches of Serenade and Rangular. It needs
+`curl` and network access, but no source checkouts or manual revisions:
 
 ```sh
-make refresh-docs \
-  SERENADE_ROOT=/path/to/serenade SERENADE_REV=<serenade-commit> \
-  RANGULAR_ROOT=/path/to/rangular RANGULAR_REV=<rangular-release-commit>
+make refresh-docs
 make ci
 ```
 
-The Rust refresh tool reads the selected commits, not the current contents of
-the source checkouts. It checks Rangular's tag and package version against
-the locked crates.io parser, expression and host packages' published source
-revisions. Dependencies must already be available locally (`cargo fetch --locked`
-if needed). The manifest records source paths, versions, revisions
-and content hashes. Builds verify those hashes and reject mismatched parser
-versions. Commit the refreshed corpus with the implementation; it never
-updates itself.
+The tool automatically updates `rangular-parser` and the lockfile to match the
+latest Rangular release, then verifies that the parser and its expression and
+host dependencies were published from that release's revision. This released
+parser is independent of the development documentation.
+The manifest records source paths, versions,
+revisions and content hashes. Builds verify those hashes; installed binaries
+do not update themselves.
 
 The embedded upstream content is sourced from Serenade and Rangular, each
 distributed under Apache-2.0. Original source locations and revisions are

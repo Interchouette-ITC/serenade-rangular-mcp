@@ -8,11 +8,12 @@ version = "1.0.0"
 edition = "2024"
 rust-version = "1.100"
 description = "Source-backed Serenade and Rangular documentation MCP"
-publish = false
+publish = true
 authors = ["Interchouette"]
-repository = "https://github.com/Interchouette-ITC/Serenade"
+repository = "https://github.com/Interchouette-ITC/serenade-rangular-mcp"
 homepage = "https://docs.serenade.rs"
 license = "Apache-2.0"
+include = ["src/**", "tests/**", "build.rs", "Cargo.toml", "corpus/**", "docs/**", "LICENSE"]
 
 [dependencies]
 anyhow = "1"
@@ -45,7 +46,6 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 [build-dependencies]
 serde_json = "1"
 sha2 = "0.11"
-toml = "1.2.2"
 
 [dev-dependencies]
 rmcp = { version = "3.11.0", default-features = false, features = [

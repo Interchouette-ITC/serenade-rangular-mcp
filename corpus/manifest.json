@@ -1,6 +1,622 @@
 {
   "documents": [
     {
+      "id": "rangular/demo-leptos/README.md",
+      "path": "demo-leptos/README.md",
+      "product": "rangular",
+      "sha256": "63cf059e060fa96fbf646b8b1a0677789b5001860eb62a9e394793663ffcfc1d",
+      "title": "Browser demo (Leptos)"
+    },
+    {
+      "id": "rangular/demo-leptos/Trunk.toml",
+      "path": "demo-leptos/Trunk.toml",
+      "product": "rangular",
+      "sha256": "2dfadb7d233e3f4a563364fe6bd474aadf472e002e57458d92380b746b9bb6d4",
+      "title": "Trunk 0.21 defaults to version_123; pin current Binaryen (matches host wasm-opt)."
+    },
+    {
+      "id": "rangular/demo-leptos/build.rs",
+      "path": "demo-leptos/build.rs",
+      "product": "rangular",
+      "sha256": "d3b150d5c3d46f499258a887aab1aa323374ea6e8a1ebaa0be2e133f83d94341",
+      "title": "build.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/index.html",
+      "path": "demo-leptos/index.html",
+      "product": "rangular",
+      "sha256": "98d0d8564521549e766d046138ceb282bf5d66047b58bbc8ecedcf00fade3842",
+      "title": "index.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/app.rs",
+      "path": "demo-leptos/src/app.rs",
+      "product": "rangular",
+      "sha256": "f3fbb803501516409504e7552850b6d7ac40059778a58267711962f793a445b9",
+      "title": "app.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/asset_icon/asset_icon.html",
+      "path": "demo-leptos/src/components/asset_icon/asset_icon.html",
+      "product": "rangular",
+      "sha256": "8a4c58de593098afabb9646366b48cd891df6c4dca08a50142035e2c7cbe92cd",
+      "title": "asset_icon.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/asset_icon/asset_icon.rs",
+      "path": "demo-leptos/src/components/asset_icon/asset_icon.rs",
+      "product": "rangular",
+      "sha256": "1bc0f992880fd7925e081bd4b3dec07e266247563cfe13d64ea988cb50cafef7",
+      "title": "asset_icon.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/asset_icon/asset_icon.scss",
+      "path": "demo-leptos/src/components/asset_icon/asset_icon.scss",
+      "product": "rangular",
+      "sha256": "a1db649f7476f00eef374335c77cbe2f29323451029ea89210980f14477c0f66",
+      "title": "asset_icon.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/asset_icon/mod.rs",
+      "path": "demo-leptos/src/components/asset_icon/mod.rs",
+      "product": "rangular",
+      "sha256": "e43e756589c2f8871a8ac73446fb26d496b2f62c4cd3bdd1fb5c3c01b1824a86",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/chrome_header/chrome_header.html",
+      "path": "demo-leptos/src/components/chrome_header/chrome_header.html",
+      "product": "rangular",
+      "sha256": "f9c0b0cd31bec654cc67f3192922ad3f4b90b54e69b81339d12d57781a9ee0c2",
+      "title": "chrome_header.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/chrome_header/chrome_header.rs",
+      "path": "demo-leptos/src/components/chrome_header/chrome_header.rs",
+      "product": "rangular",
+      "sha256": "5a889f128abe7d7d5b5daab01aed1c0ed77d6345314518a58dd53aa99418ff59",
+      "title": "chrome_header.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/chrome_header/chrome_header.scss",
+      "path": "demo-leptos/src/components/chrome_header/chrome_header.scss",
+      "product": "rangular",
+      "sha256": "dac4fb3386828a5ed65f8c59249b5370a478351e3d73f22d2f938dd393310da9",
+      "title": "chrome_header.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/chrome_header/mod.rs",
+      "path": "demo-leptos/src/components/chrome_header/mod.rs",
+      "product": "rangular",
+      "sha256": "550fcf28104f722499289e9947a8e71b0ab369d1878e132eba5c667d077892f0",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/color_field/color_field.html",
+      "path": "demo-leptos/src/components/color_field/color_field.html",
+      "product": "rangular",
+      "sha256": "89b0e4e1b4fdf5853249ca3086a296e276a0599787b4b164598ee5cb245bb130",
+      "title": "color_field.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/color_field/color_field.rs",
+      "path": "demo-leptos/src/components/color_field/color_field.rs",
+      "product": "rangular",
+      "sha256": "c92cc97c63a9d66ea13ce9c5eaef425e31cde86bffa145610bfc98846ae29e28",
+      "title": "color_field.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/color_field/color_field.scss",
+      "path": "demo-leptos/src/components/color_field/color_field.scss",
+      "product": "rangular",
+      "sha256": "b27b776500f481eaea51b84d501247df45c0584e15db2805f1145f308c600328",
+      "title": "color_field.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/color_field/mod.rs",
+      "path": "demo-leptos/src/components/color_field/mod.rs",
+      "product": "rangular",
+      "sha256": "52051dbe3f3c6a42be61a475de87a54d576bc866891c1d7dda1d829a722e21ac",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/event_payload/event_payload.html",
+      "path": "demo-leptos/src/components/event_payload/event_payload.html",
+      "product": "rangular",
+      "sha256": "374b180ff625325c3c205fbe3d691a2d5e24318be22086e5c049aeb7b4711d50",
+      "title": "event_payload.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/event_payload/event_payload.rs",
+      "path": "demo-leptos/src/components/event_payload/event_payload.rs",
+      "product": "rangular",
+      "sha256": "44e78fb1bcf7d8a363e4d6576d4fe24efa4cc6660c852f5b067d3fce10b32756",
+      "title": "event_payload.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/event_payload/event_payload.scss",
+      "path": "demo-leptos/src/components/event_payload/event_payload.scss",
+      "product": "rangular",
+      "sha256": "f1ab47da131328656f8fb89adb45e36323b14152404cf58f261ef96b28a5ddb4",
+      "title": "event_payload.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/event_payload/mod.rs",
+      "path": "demo-leptos/src/components/event_payload/mod.rs",
+      "product": "rangular",
+      "sha256": "57677e930c4c44cb6400c6d52da6d7c6758e9cf36ee0869015a768b153fe96ed",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_required/field_required.html",
+      "path": "demo-leptos/src/components/field_required/field_required.html",
+      "product": "rangular",
+      "sha256": "b6b84dd355cfff9961fc1f3ca559f0407fabc3f06df209c6373a7dc2663b1b35",
+      "title": "field_required.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_required/field_required.rs",
+      "path": "demo-leptos/src/components/field_required/field_required.rs",
+      "product": "rangular",
+      "sha256": "8d18d522d72f682b4291c8510d73029ec08217891eae5e956bc9bcfe721141e1",
+      "title": "field_required.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_required/field_required.scss",
+      "path": "demo-leptos/src/components/field_required/field_required.scss",
+      "product": "rangular",
+      "sha256": "228d09c68d8d1a9f26a44f6e71ba918d4f3b725b0ce0a109cf251fb72c933533",
+      "title": "field_required.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_required/mod.rs",
+      "path": "demo-leptos/src/components/field_required/mod.rs",
+      "product": "rangular",
+      "sha256": "d3bdb2edc6e982bf5ce2fb36c1ebca27ff933262f9ef3987c9a9533948007773",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_validators/field_validators.html",
+      "path": "demo-leptos/src/components/field_validators/field_validators.html",
+      "product": "rangular",
+      "sha256": "114f71d529dbfab2a914c4d66a9ac93e64e2cf760907ba1753850c131a34ab39",
+      "title": "field_validators.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_validators/field_validators.rs",
+      "path": "demo-leptos/src/components/field_validators/field_validators.rs",
+      "product": "rangular",
+      "sha256": "39a224d77a4816d7748e629e0de8c2773eaa9f020b59c6eb542d259b084509a8",
+      "title": "field_validators.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_validators/field_validators.scss",
+      "path": "demo-leptos/src/components/field_validators/field_validators.scss",
+      "product": "rangular",
+      "sha256": "b1160800e24b8acf4be0e6face4e7d610a6bfebcdde03b2a2d99046f927102cb",
+      "title": "field_validators.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/field_validators/mod.rs",
+      "path": "demo-leptos/src/components/field_validators/mod.rs",
+      "product": "rangular",
+      "sha256": "c3ee54ef31f716d0d8130d12037cffd9402dc570ce4b3ca3f839a93cfd00f95d",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_child/io_child.html",
+      "path": "demo-leptos/src/components/io_child/io_child.html",
+      "product": "rangular",
+      "sha256": "f746bd4f189ae45d6298458a5f4ecb47ccb43a91c2fca7e2062855e7e2d29819",
+      "title": "io_child.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_child/io_child.rs",
+      "path": "demo-leptos/src/components/io_child/io_child.rs",
+      "product": "rangular",
+      "sha256": "570d82d8ff59990f6df8dfbd2df2102e90e4b62d86d1b28547f250045cd9f8c0",
+      "title": "io_child.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_child/io_child.scss",
+      "path": "demo-leptos/src/components/io_child/io_child.scss",
+      "product": "rangular",
+      "sha256": "867b5c6479b3fe8b73dc53e04b4ae84aec35c635b7263ea334e53c061fe5f196",
+      "title": "io_child.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_child/mod.rs",
+      "path": "demo-leptos/src/components/io_child/mod.rs",
+      "product": "rangular",
+      "sha256": "68f266996c483fad9ef69bb0fb67512d4b74dfcdff1c227c5d55b6fa698deabf",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_parent/io_parent.html",
+      "path": "demo-leptos/src/components/io_parent/io_parent.html",
+      "product": "rangular",
+      "sha256": "7d226625337eabd76b8aa953811c33a0714e3715270355586a6b4d6e33765ce8",
+      "title": "io_parent.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_parent/io_parent.rs",
+      "path": "demo-leptos/src/components/io_parent/io_parent.rs",
+      "product": "rangular",
+      "sha256": "131c8afec8b401888a41136d9f4dc30bc81c78ebb7327726e5c21e028dc6e40c",
+      "title": "io_parent.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_parent/io_parent.scss",
+      "path": "demo-leptos/src/components/io_parent/io_parent.scss",
+      "product": "rangular",
+      "sha256": "d8ac70b2f184cfb4d1dc67b40fcf2bc6596aebd5e60c4215914bdf0b751e30e0",
+      "title": "io_parent.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/io_parent/mod.rs",
+      "path": "demo-leptos/src/components/io_parent/mod.rs",
+      "product": "rangular",
+      "sha256": "f1774cca2217f4a5394c9d63085d45497aac8728ea34ffdbc354db6ffc32c5f4",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.html",
+      "path": "demo-leptos/src/components/item_list/item_list.html",
+      "product": "rangular",
+      "sha256": "b0ea13a82168f73e83852d7bdc6e8c5ac5726280cea2bae7cdc0ef2668c44731",
+      "title": "item_list.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.rs",
+      "path": "demo-leptos/src/components/item_list/item_list.rs",
+      "product": "rangular",
+      "sha256": "ab3c8c778e9b58a1accdf2a9beae1d45962059db7fd50f9556f88a3bcc1dcaf2",
+      "title": "item_list.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/item_list.scss",
+      "path": "demo-leptos/src/components/item_list/item_list.scss",
+      "product": "rangular",
+      "sha256": "d93a1d455ca10f15b280f14fd05ec784626312a285579f06f115371f7fbb15e9",
+      "title": "item_list.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/item_list/mod.rs",
+      "path": "demo-leptos/src/components/item_list/mod.rs",
+      "product": "rangular",
+      "sha256": "5812cc41b24a3ef46963fa59d64530bba515803471946f216b8f3be09d40236c",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/layout_shell/layout_shell.html",
+      "path": "demo-leptos/src/components/layout_shell/layout_shell.html",
+      "product": "rangular",
+      "sha256": "11ee6c0a2c40c3ddf83f9a7c9f87118c76264cf9ed9cbc479da98f6c99303312",
+      "title": "layout_shell.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/layout_shell/layout_shell.rs",
+      "path": "demo-leptos/src/components/layout_shell/layout_shell.rs",
+      "product": "rangular",
+      "sha256": "ec6c94de3575effabca4149e920eda525c2c854db5f3f127c66843e6ef0a422c",
+      "title": "layout_shell.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/layout_shell/layout_shell.scss",
+      "path": "demo-leptos/src/components/layout_shell/layout_shell.scss",
+      "product": "rangular",
+      "sha256": "d7dd3ffe3d51e4030c083f88f53af0de8686901321fe4d66ddd71bc0727b7b53",
+      "title": "layout_shell.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/layout_shell/mod.rs",
+      "path": "demo-leptos/src/components/layout_shell/mod.rs",
+      "product": "rangular",
+      "sha256": "c8e3d60f5b2c69bb905ca46a3da7ca9635d8f09055632e16d1471b6371962174",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/mod.rs",
+      "path": "demo-leptos/src/components/mod.rs",
+      "product": "rangular",
+      "sha256": "1d384011879ad0dd57f55d5ab55fbf860b8369e243d8d3dc9e28acb2ecfea307",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/named_slots/mod.rs",
+      "path": "demo-leptos/src/components/named_slots/mod.rs",
+      "product": "rangular",
+      "sha256": "c12b6ceede4f06381f594ee7ec28df4d1848fd01e913a508f0e4a5110d52cec1",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/named_slots/named_slots.html",
+      "path": "demo-leptos/src/components/named_slots/named_slots.html",
+      "product": "rangular",
+      "sha256": "6adb8694ff3f9b7bb309bf497522920fdcf12ddd329e17b5949fbdc43524bd10",
+      "title": "named_slots.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/named_slots/named_slots.rs",
+      "path": "demo-leptos/src/components/named_slots/named_slots.rs",
+      "product": "rangular",
+      "sha256": "328d403ce62e1a3ee0bab7b749109397eb131ce3efff9dcca6f7e1663c01fff2",
+      "title": "named_slots.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/named_slots/named_slots.scss",
+      "path": "demo-leptos/src/components/named_slots/named_slots.scss",
+      "product": "rangular",
+      "sha256": "f16f58e2f8b3513125bc97187a8673285c38c0c142c6b1afc2766e08fe9c54b3",
+      "title": "named_slots.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/pipes/mod.rs",
+      "path": "demo-leptos/src/components/pipes/mod.rs",
+      "product": "rangular",
+      "sha256": "5b0b83e26469dd32141807b459178000a7cca7ab46a600de7ec491392bcecbb2",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/pipes/pipes.html",
+      "path": "demo-leptos/src/components/pipes/pipes.html",
+      "product": "rangular",
+      "sha256": "826e4252cf7e648c6440b5e4b409f7048ca5e6783feeebbc12b87a5ec4a86a49",
+      "title": "pipes.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/pipes/pipes.rs",
+      "path": "demo-leptos/src/components/pipes/pipes.rs",
+      "product": "rangular",
+      "sha256": "2f0b553b9f449dc23d281cca08238303a44c97cd08900c8ee48819a769aa9258",
+      "title": "pipes.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/pipes/pipes.scss",
+      "path": "demo-leptos/src/components/pipes/pipes.scss",
+      "product": "rangular",
+      "sha256": "c1972ad8a20befb48dd2390e99fe9d45d8ded10542e86ff34b98739de45916b6",
+      "title": "pipes.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/seed_bar/mod.rs",
+      "path": "demo-leptos/src/components/seed_bar/mod.rs",
+      "product": "rangular",
+      "sha256": "83c1119dfe05fddcd19bd1df81723287dbe5c2eaa11c388312f9be18122b297f",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/seed_bar/seed_bar.html",
+      "path": "demo-leptos/src/components/seed_bar/seed_bar.html",
+      "product": "rangular",
+      "sha256": "c16feeaee8ce6a4e27858016fa83e16e6d38f3a68e564aa292bfe2738d63acb2",
+      "title": "seed_bar.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/seed_bar/seed_bar.rs",
+      "path": "demo-leptos/src/components/seed_bar/seed_bar.rs",
+      "product": "rangular",
+      "sha256": "3f76943b1f31c7f3ea1a44b563aa6920043d83370a5f0a0e529a48ee18c432f1",
+      "title": "seed_bar.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/seed_bar/seed_bar.scss",
+      "path": "demo-leptos/src/components/seed_bar/seed_bar.scss",
+      "product": "rangular",
+      "sha256": "919dd0df0b1170dac90849f3b8a7adbf32fdaa4015e20684672e175ccc0965c6",
+      "title": "seed_bar.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/template_outlet/mod.rs",
+      "path": "demo-leptos/src/components/template_outlet/mod.rs",
+      "product": "rangular",
+      "sha256": "4c4de337597a546f7eba7a2a607a61519a9799e0a516bb02a3c6b8545bdf82e6",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/template_outlet/template_outlet.html",
+      "path": "demo-leptos/src/components/template_outlet/template_outlet.html",
+      "product": "rangular",
+      "sha256": "4547acdae7e6925075553c397a63a97b39cab9a0ca21a5a7242990ca33230c8a",
+      "title": "template_outlet.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/template_outlet/template_outlet.rs",
+      "path": "demo-leptos/src/components/template_outlet/template_outlet.rs",
+      "product": "rangular",
+      "sha256": "2825527d0408521f41f705c86e16a668dc2c7c7cda327c351aefd0b3e7152950",
+      "title": "template_outlet.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/template_outlet/template_outlet.scss",
+      "path": "demo-leptos/src/components/template_outlet/template_outlet.scss",
+      "product": "rangular",
+      "sha256": "674c9d05e16d143431ff46bea9a77fc64c9fcb54c6882f9d05b7d8d816bc4aef",
+      "title": "template_outlet.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/two_way/mod.rs",
+      "path": "demo-leptos/src/components/two_way/mod.rs",
+      "product": "rangular",
+      "sha256": "0f44f221c9e90693a5304664225e71b90ca8342ee7ea875e478321a81f9f0252",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/two_way/two_way.html",
+      "path": "demo-leptos/src/components/two_way/two_way.html",
+      "product": "rangular",
+      "sha256": "518755eed44c7cf61c6fcce8d159a0874062acf10c2d68f7b1b09c3d011cd67d",
+      "title": "two_way.html"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/two_way/two_way.rs",
+      "path": "demo-leptos/src/components/two_way/two_way.rs",
+      "product": "rangular",
+      "sha256": "4d6208ae7199639bb78f36d31f926579b461aaa84916a651092dbc1b1ac0827b",
+      "title": "two_way.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/components/two_way/two_way.scss",
+      "path": "demo-leptos/src/components/two_way/two_way.scss",
+      "product": "rangular",
+      "sha256": "af722512b89d3370c52c97b3dd2297a4ef2457a150801a4ab1c13bd0799e0afa",
+      "title": "two_way.scss"
+    },
+    {
+      "id": "rangular/demo-leptos/src/decor.rs",
+      "path": "demo-leptos/src/decor.rs",
+      "product": "rangular",
+      "sha256": "d45ac99147d499c743ba8268ff7cd88511e6426198b6f0935209f226ccb8b752",
+      "title": "decor.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/demo_pipes.rs",
+      "path": "demo-leptos/src/demo_pipes.rs",
+      "product": "rangular",
+      "sha256": "21dc27652dc94fc08dedfad29fac24ce4e3369d10b4b749d56960c9e2d405f01",
+      "title": "demo_pipes.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/demo_seed.rs",
+      "path": "demo-leptos/src/demo_seed.rs",
+      "product": "rangular",
+      "sha256": "7a62b5e51849f5e2ae37b41ec4e6263c3905a60cbe50416d2723f28cf9937475",
+      "title": "demo_seed.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/main.rs",
+      "path": "demo-leptos/src/main.rs",
+      "product": "rangular",
+      "sha256": "58858428a620fb89d7b41a5bb50aa04086bf569cb43d0aad81ffc33e37840cba",
+      "title": "main.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/showcase/bus.rs",
+      "path": "demo-leptos/src/showcase/bus.rs",
+      "product": "rangular",
+      "sha256": "9c538811161a297e80e6b3e75d114ffe4ff385792e713e48921bea65dc42e373",
+      "title": "bus.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/showcase/mod.rs",
+      "path": "demo-leptos/src/showcase/mod.rs",
+      "product": "rangular",
+      "sha256": "409c7d7a3fac339a3e1e739dcdd71e224750b735e1beadb7b17a4e29fd8ce5e8",
+      "title": "mod.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/showcase/observer.rs",
+      "path": "demo-leptos/src/showcase/observer.rs",
+      "product": "rangular",
+      "sha256": "5133caa0f95c19515071a2202b3639b3d05c0879cef9435062fd62b1b277881e",
+      "title": "observer.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/src/showcase/sources.rs",
+      "path": "demo-leptos/src/showcase/sources.rs",
+      "product": "rangular",
+      "sha256": "1e9c0c277ac106262ec80b4977d2579e8db982b91842187af71eaa7d994fc82c",
+      "title": "sources.rs"
+    },
+    {
+      "id": "rangular/demo-leptos/style/components.generated.css",
+      "path": "demo-leptos/style/components.generated.css",
+      "product": "rangular",
+      "sha256": "5c4d3b3e988d0309029fc8e38fc05f56d980da5d500d401ec7b2fc9d16c1ef36",
+      "title": "components.generated.css"
+    },
+    {
+      "id": "rangular/demo-leptos/style/demo-swatches.css",
+      "path": "demo-leptos/style/demo-swatches.css",
+      "product": "rangular",
+      "sha256": "c629ee2ea4ceb40591cce99902be96cd92c140d59aa537b967a693b9da6e5c43",
+      "title": "demo-swatches.css"
+    },
+    {
+      "id": "rangular/demo-leptos/style/main.css",
+      "path": "demo-leptos/style/main.css",
+      "product": "rangular",
+      "sha256": "dbaddd138061033e58675e2cc82339fb1292cddd6fcf3f2918d08fad39148d5b",
+      "title": "main.css"
+    },
+    {
+      "id": "rangular/demo-leptos/style/showcase.css",
+      "path": "demo-leptos/style/showcase.css",
+      "product": "rangular",
+      "sha256": "e27646f94aae19afd388133134624e4ac024544acf1f5319c20cdeda96ffe81f",
+      "title": "showcase.css"
+    },
+    {
+      "id": "rangular/demo-tauri/README.md",
+      "path": "demo-tauri/README.md",
+      "product": "rangular",
+      "sha256": "fb79cf92049af70f276ae85d54b7eea9b2523b8c7e137280038b682a085e2147",
+      "title": "Desktop demo (Tauri)"
+    },
+    {
+      "id": "rangular/demo-tauri/src/build.rs",
+      "path": "demo-tauri/src/build.rs",
+      "product": "rangular",
+      "sha256": "6aeeab41bc35efde4e3c2b644a6248f7fc06d24ae30b75c0d33491cbb0c1fa31",
+      "title": "build.rs"
+    },
+    {
+      "id": "rangular/demo-tauri/src/capabilities/default.json",
+      "path": "demo-tauri/src/capabilities/default.json",
+      "product": "rangular",
+      "sha256": "beaf2f8dc40abd93ea2f6b6f0dfb29ec2b077eaa6e28d0bcc32da452c50e1e41",
+      "title": "default.json"
+    },
+    {
+      "id": "rangular/demo-tauri/src/src/lib.rs",
+      "path": "demo-tauri/src/src/lib.rs",
+      "product": "rangular",
+      "sha256": "498d6db903d76cf26e300e01f264dc6280306f8403543b20315ed37dbb021498",
+      "title": "lib.rs"
+    },
+    {
+      "id": "rangular/demo-tauri/src/src/main.rs",
+      "path": "demo-tauri/src/src/main.rs",
+      "product": "rangular",
+      "sha256": "b121ab764f497c2867f04c2851fd9b4c1455866327cd981dbccbacb1d9963f8a",
+      "title": "main.rs"
+    },
+    {
+      "id": "rangular/demo-tauri/src/tauri.conf.json",
+      "path": "demo-tauri/src/tauri.conf.json",
+      "product": "rangular",
+      "sha256": "8bd0c54abb712a9bdcd047b428dd2c636800db8dd3042cc7d75f86784675af21",
+      "title": "tauri.conf.json"
+    },
+    {
+      "id": "rangular/docs/CHANGELOG.md",
+      "path": "docs/CHANGELOG.md",
+      "product": "rangular",
+      "sha256": "9e995c8b316b69b532bb4208b30e5b667b0868586234408c883607663293c55a",
+      "title": "Changelog"
+    },
+    {
+      "id": "rangular/docs/OVERVIEW.md",
+      "path": "docs/OVERVIEW.md",
+      "product": "rangular",
+      "sha256": "a00d5a69f9d108c4520abf9718e7e2983099b6dc4f09bac6456febaa8b2b9c9e",
+      "title": "rangular docs"
+    },
+    {
+      "id": "rangular/docs/README.md",
+      "path": "docs/README.md",
+      "product": "rangular",
+      "sha256": "0b0436b4d65ccf206fcbe45b90b85902aec9548836fef09d2f064196d3be5672",
+      "title": "rangular"
+    },
+    {
+      "id": "rangular/docs/SPEC.md",
+      "path": "docs/SPEC.md",
+      "product": "rangular",
+      "sha256": "dee070a497de7f35b0b01ab1f5bd8dcbf915f21653b094752ef8043e2b81c23e",
+      "title": "rangular specification v0.1"
+    },
+    {
       "id": "serenade/docs-dev/ADMIN.md",
       "path": "docs-dev/ADMIN.md",
       "product": "serenade",
@@ -295,6 +911,419 @@
       "title": "**Serenade**"
     },
     {
+      "id": "serenade/examples/demo-app/README.md",
+      "path": "examples/demo-app/README.md",
+      "product": "serenade",
+      "sha256": "20458855de94d669b5a56ad97888825cf74e13bdecb677e045a44c245a71268b",
+      "title": "Demo Serenade app"
+    },
+    {
+      "id": "serenade/examples/demo-app/config/packages/demo.toml",
+      "path": "examples/demo-app/config/packages/demo.toml",
+      "product": "serenade",
+      "sha256": "97dc3bbdb9fe1b90514472ca3f98461009080c0499b0e3585168561c30e092e9",
+      "title": "demo.toml"
+    },
+    {
+      "id": "serenade/examples/demo-app/config/packages/dev/demo.toml",
+      "path": "examples/demo-app/config/packages/dev/demo.toml",
+      "product": "serenade",
+      "sha256": "38d2e825e8f0ccaff5321159cef6d1b6eee2e7813c2c701233923706e93378b9",
+      "title": "demo.toml"
+    },
+    {
+      "id": "serenade/examples/demo-app/config/packages/framework.toml",
+      "path": "examples/demo-app/config/packages/framework.toml",
+      "product": "serenade",
+      "sha256": "22e1a8460beacbbcfc20939253206cdfc5d527d8a5535a251531d900c9068350",
+      "title": "Shared secret used by framework services (example only)."
+    },
+    {
+      "id": "serenade/examples/demo-app/src/bin/console.rs",
+      "path": "examples/demo-app/src/bin/console.rs",
+      "product": "serenade",
+      "sha256": "87133c6d21e353e4261a987cacac081d357527c0ab2c48410b9c06e0818cd284",
+      "title": "console.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/bundle.rs",
+      "path": "examples/demo-app/src/bundle.rs",
+      "product": "serenade",
+      "sha256": "da516b3da87722f9a3eb37cbeecd6ab9eb3fbb7e00a83c83e8fc7c808b90f15f",
+      "title": "bundle.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/lib.rs",
+      "path": "examples/demo-app/src/lib.rs",
+      "product": "serenade",
+      "sha256": "526498bc8d102724f3ae80c3d1ddc9b60f361abf78d0ef0e22995a5911969bc3",
+      "title": "lib.rs"
+    },
+    {
+      "id": "serenade/examples/demo-app/src/main.rs",
+      "path": "examples/demo-app/src/main.rs",
+      "product": "serenade",
+      "sha256": "84ed20ac3705f7453093f693f84660a10c9c2e23c49f71377d1049fb70ca7126",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/README.md",
+      "path": "examples/demo-html/README.md",
+      "product": "serenade",
+      "sha256": "579f8d5ae365c5b7888c0481efcf9edb92522a104dc9e295f279571f6aa29ea0",
+      "title": "demo-html (MyFeed)"
+    },
+    {
+      "id": "serenade/examples/demo-html/assets/clitorine.js",
+      "path": "examples/demo-html/assets/clitorine.js",
+      "product": "serenade",
+      "sha256": "303ccb6f932795a4732d72f482e05678728c043580845b77b40389f85872cf8d",
+      "title": "clitorine.js"
+    },
+    {
+      "id": "serenade/examples/demo-html/assets/myfeed.css",
+      "path": "examples/demo-html/assets/myfeed.css",
+      "product": "serenade",
+      "sha256": "a6fb0982433079e8d00bbb0214caae5a8509452b6d19c2a39590a65f7668bb8a",
+      "title": "myfeed.css"
+    },
+    {
+      "id": "serenade/examples/demo-html/config/packages/admin.toml",
+      "path": "examples/demo-html/config/packages/admin.toml",
+      "product": "serenade",
+      "sha256": "2873c1f433043f6fb395d3700cd7ce4e11bc8dbfb960c19c1e357988e94a3206",
+      "title": "Sample package config for serenade-admin (Flex recipe `admin`)."
+    },
+    {
+      "id": "serenade/examples/demo-html/src/admin.rs",
+      "path": "examples/demo-html/src/admin.rs",
+      "product": "serenade",
+      "sha256": "edd6d171b1875a486fe05dac5b9996c2cf20c6a3a9a913da4303004c07e5ed7f",
+      "title": "admin.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/admin_crud.rs",
+      "path": "examples/demo-html/src/admin_crud.rs",
+      "product": "serenade",
+      "sha256": "e112cdc117fa28346e311741923aa0ad5ff96c27b84662f6c5d55651083f4d84",
+      "title": "admin_crud.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/app.rs",
+      "path": "examples/demo-html/src/app.rs",
+      "product": "serenade",
+      "sha256": "e0e850a60cb7d634d2267551b314ff051ff083bfb03f4724a604aada15f5fad2",
+      "title": "app.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/embed.rs",
+      "path": "examples/demo-html/src/embed.rs",
+      "product": "serenade",
+      "sha256": "3d5aa6154ea72c16d4030e97eb23d8865303cdae8a4e4e2d3d25e5e68f849e1a",
+      "title": "embed.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/emoji.rs",
+      "path": "examples/demo-html/src/emoji.rs",
+      "product": "serenade",
+      "sha256": "aadd502b5bd7de3453b7cb3894268e822390dcd01bb5bc76ef0ea6300ee833bc",
+      "title": "emoji.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/feed.rs",
+      "path": "examples/demo-html/src/feed.rs",
+      "product": "serenade",
+      "sha256": "75d0acab0e1e854f17dd3d502c1062548d71069c4bb70ea6fd159892ba89213f",
+      "title": "feed.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/forms.rs",
+      "path": "examples/demo-html/src/forms.rs",
+      "product": "serenade",
+      "sha256": "f813c80f5198a69c8a50c61582e8cf0915cc3522a87060e36cf33c62ecd3d9b0",
+      "title": "forms.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/html.rs",
+      "path": "examples/demo-html/src/html.rs",
+      "product": "serenade",
+      "sha256": "fb053f926791648cafd0e02dd900d13347c189b989e2990599acddeaaefce958",
+      "title": "html.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/i18n.rs",
+      "path": "examples/demo-html/src/i18n.rs",
+      "product": "serenade",
+      "sha256": "9e28c687b43b9d4ff8569193352fa7a68cd092741994e96244d180ef63b8325a",
+      "title": "i18n.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/main.rs",
+      "path": "examples/demo-html/src/main.rs",
+      "product": "serenade",
+      "sha256": "07f4d74031cc621dfa9885e246241905b6930a902bec8d9caa7d06d6b65c230d",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/posts.rs",
+      "path": "examples/demo-html/src/posts.rs",
+      "product": "serenade",
+      "sha256": "b17e1cf4a68b5db6a0043900a68017f66faef20f5a77c5d5be1acf8c9a8a4b52",
+      "title": "posts.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/sanitize.rs",
+      "path": "examples/demo-html/src/sanitize.rs",
+      "product": "serenade",
+      "sha256": "738085814707072984f0b1fdec525e8d44d7a5c9466ddbb813974a95841825f4",
+      "title": "sanitize.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/search.rs",
+      "path": "examples/demo-html/src/search.rs",
+      "product": "serenade",
+      "sha256": "376313827d2b2f18894219ad4d43564f94fc4d095bc7ad35d3fa69dc190d5617",
+      "title": "search.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/state.rs",
+      "path": "examples/demo-html/src/state.rs",
+      "product": "serenade",
+      "sha256": "04ac298707bdae925692440b36ee2058b32bf57d6befbf9945eb9f5f12fe7f50",
+      "title": "state.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/src/store.rs",
+      "path": "examples/demo-html/src/store.rs",
+      "product": "serenade",
+      "sha256": "693336168fb52b704b1fdad6e5fcb2769ea1b5973586602a9ae26660baea9d27",
+      "title": "store.rs"
+    },
+    {
+      "id": "serenade/examples/demo-html/translations/messages.en.toml",
+      "path": "examples/demo-html/translations/messages.en.toml",
+      "product": "serenade",
+      "sha256": "e874cc9f2891d80b34b9e91a3a302fccea885add1f11a1a3cbe544c58d6db520",
+      "title": "messages.en.toml"
+    },
+    {
+      "id": "serenade/examples/demo-html/translations/messages.fr.toml",
+      "path": "examples/demo-html/translations/messages.fr.toml",
+      "product": "serenade",
+      "sha256": "dd96ebea54c54c2905f38e1716f28d230633ad63377d7483c8c20c7dc95f09c5",
+      "title": "messages.fr.toml"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/README.md",
+      "path": "examples/demo-monorepo/README.md",
+      "product": "serenade",
+      "sha256": "298eb4523ac8101745de4a1afdfe2319e049d55c4af9922f921d6ea629c8aa8c",
+      "title": "demo-monorepo"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-spa/Trunk.toml",
+      "path": "examples/demo-monorepo/apps/demo-spa/Trunk.toml",
+      "product": "serenade",
+      "sha256": "48d9019c4ee2fa48a827342d4141edc8b0d1fb4a6c6bfe7be931fa11233cce0d",
+      "title": "Trunk.toml"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-spa/index.html",
+      "path": "examples/demo-monorepo/apps/demo-spa/index.html",
+      "product": "serenade",
+      "sha256": "b7b521071dfc3cf948a5c35cae347a0570167a373ecf760c52fe3951cd78aa68",
+      "title": "index.html"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-spa/src/main.rs",
+      "path": "examples/demo-monorepo/apps/demo-spa/src/main.rs",
+      "product": "serenade",
+      "sha256": "d55dd68b65a410fd4eff5b2758621e387b1f856827c6a464e2a663d6bc5fdf6b",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-spa/style.css",
+      "path": "examples/demo-monorepo/apps/demo-spa/style.css",
+      "product": "serenade",
+      "sha256": "ff336b5e6203756ae8eacaaff9f2c6423b55ab4dea90158894a013ee4ab20457",
+      "title": "style.css"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-ssg/Trunk.toml",
+      "path": "examples/demo-monorepo/apps/demo-ssg/Trunk.toml",
+      "product": "serenade",
+      "sha256": "48d9019c4ee2fa48a827342d4141edc8b0d1fb4a6c6bfe7be931fa11233cce0d",
+      "title": "Trunk.toml"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-ssg/index.html",
+      "path": "examples/demo-monorepo/apps/demo-ssg/index.html",
+      "product": "serenade",
+      "sha256": "4b8e5a97727bec6c8633f9c87e1918c7b10ffe5f94114ad65541db41ff3d36b4",
+      "title": "index.html"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-ssg/src/bin/prerender.rs",
+      "path": "examples/demo-monorepo/apps/demo-ssg/src/bin/prerender.rs",
+      "product": "serenade",
+      "sha256": "33223a5297fcaa2ee19c2582f897751c6497b8aba480f6470ffdc0b45b69d612",
+      "title": "prerender.rs"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-ssg/src/lib.rs",
+      "path": "examples/demo-monorepo/apps/demo-ssg/src/lib.rs",
+      "product": "serenade",
+      "sha256": "2f9d719069343052c106bc65a5a096b398bce769d23d916cbd45556567ad4ccb",
+      "title": "lib.rs"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/apps/demo-ssg/src/main.rs",
+      "path": "examples/demo-monorepo/apps/demo-ssg/src/main.rs",
+      "product": "serenade",
+      "sha256": "95a393cbcd0d6a343c629ff152034b7d7a5a7cec67e6df66e8d9c3fb606be653",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-monorepo/libs/demo-ui/src/lib.rs",
+      "path": "examples/demo-monorepo/libs/demo-ui/src/lib.rs",
+      "product": "serenade",
+      "sha256": "696eb83abaeec142bf28b94d0a5e7833045004a7d321d623d5829ce35b08edfe",
+      "title": "lib.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/README.md",
+      "path": "examples/demo-universal/README.md",
+      "product": "serenade",
+      "sha256": "d1dee0af9c54ab989e375520eddaa4732353e5964bd7af33c8df6a7149951deb",
+      "title": "demo-universal"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/build.rs",
+      "path": "examples/demo-universal/apps/demo-back/build.rs",
+      "product": "serenade",
+      "sha256": "028c3b01e7b5f639f9af84f1183a22216c7afb5947826433fa7bbd0838c1b441",
+      "title": "build.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/assets.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/assets.rs",
+      "product": "serenade",
+      "sha256": "4d888856fb67ca1e9d2bb90ef65430f6590cc7c36e77b33648ed3ea2e83a8e68",
+      "title": "assets.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/html.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/html.rs",
+      "product": "serenade",
+      "sha256": "ab89fdcc49275472901eee9ead2c7561c3e58f329eb8a540dab4d95e089939f4",
+      "title": "html.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/src/main.rs",
+      "path": "examples/demo-universal/apps/demo-back/src/main.rs",
+      "product": "serenade",
+      "sha256": "db7ae0ae6094d3a31ea1c6ae71d8bc19be8d50ff621973610920759b804bc279",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
+      "product": "serenade",
+      "sha256": "0c11ffc44d561c3299236e17a126ca4ab97e9f01e8f429c2b4e71f1c422463f7",
+      "title": "body.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
+      "product": "serenade",
+      "sha256": "805fb1b9e7bc50feaf03faf2d6b3a7843f49f0aee809d996031989f77545d59b",
+      "title": "document.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
+      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
+      "product": "serenade",
+      "sha256": "9eb24e84409582e2a2f26b5ed11853d31ccd591c1dfdd56cd6ba329c3ce4e90d",
+      "title": "head.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/Trunk.toml",
+      "path": "examples/demo-universal/apps/demo-front/Trunk.toml",
+      "product": "serenade",
+      "sha256": "85ce4ef37a43ff150d3a6e5ca41f5a6e54f32f906ea85fde684e781c3db5cf63",
+      "title": "Trunk.toml"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/build.rs",
+      "path": "examples/demo-universal/apps/demo-front/build.rs",
+      "product": "serenade",
+      "sha256": "caafe28c3e6b3913a6ab95566dc838d38d953f37c355eed653faeae92218978e",
+      "title": "build.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/index.html",
+      "path": "examples/demo-universal/apps/demo-front/index.html",
+      "product": "serenade",
+      "sha256": "4da90cf08a32143c87b538c84e9eac7dee66c7c5a9a30401b9ebaab39cd0fc89",
+      "title": "index.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
+      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
+      "product": "serenade",
+      "sha256": "821315b88587b8943e42cc6490225869b8f7d37b8072a379f7cee94e6b187065",
+      "title": "cms-hello-body.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
+      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
+      "product": "serenade",
+      "sha256": "3639de38807aca05216e1d80127563e6900ac3d092eaced10c3cdb46480a4e0a",
+      "title": "cms-hello-head.html"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/src/main.rs",
+      "path": "examples/demo-universal/apps/demo-front/src/main.rs",
+      "product": "serenade",
+      "sha256": "c77e453fc037e1de365f294d08548d0086d2042d971203d5a1bebf6ab19e4061",
+      "title": "main.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/apps/demo-front/style.css",
+      "path": "examples/demo-universal/apps/demo-front/style.css",
+      "product": "serenade",
+      "sha256": "8c9c9e622b8a1abe83a5da250475bc39c27539ac3f5dcb25c749da8976bc6e1d",
+      "title": "style.css"
+    },
+    {
+      "id": "serenade/examples/demo-universal/build_support/cms_hello.rs",
+      "path": "examples/demo-universal/build_support/cms_hello.rs",
+      "product": "serenade",
+      "sha256": "f404146de48d003370142de0edea2a9a7edac79c497cbb0d011ec30bad2a5a56",
+      "title": "cms_hello.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/libs/cms_hello_host.rs",
+      "path": "examples/demo-universal/libs/cms_hello_host.rs",
+      "product": "serenade",
+      "sha256": "1478b737cc731c1c96c2ecf6be9f97d903782c08774a0145625463e23ac021fa",
+      "title": "cms_hello_host.rs"
+    },
+    {
+      "id": "serenade/examples/demo-universal/libs/demo-contract/src/lib.rs",
+      "path": "examples/demo-universal/libs/demo-contract/src/lib.rs",
+      "product": "serenade",
+      "sha256": "22936cc8ab3d6ab29ec6e9c9afb1bd70cd286039226731012cbb3a1952eb461a",
+      "title": "lib.rs"
+    },
+    {
+      "id": "serenade/examples/framework-consumer/src/main.rs",
+      "path": "examples/framework-consumer/src/main.rs",
+      "product": "serenade",
+      "sha256": "60206406b2429b1894e9e0b88c6674214e89fdfe573d51e1895a7d1a0b38755e",
+      "title": "main.rs"
+    },
+    {
       "id": "serenade/guides/concepts/architecture.md",
       "path": "docs/astro/src/content/docs/concepts/architecture.md",
       "product": "serenade",
@@ -349,208 +1378,19 @@
       "product": "serenade",
       "sha256": "d10581ad44952900e8791771b767f1f2ad5da72d72f6e5b8501897a84dd2af43",
       "title": "index.md"
-    },
-    {
-      "id": "serenade/examples/demo-app/src/bin/console.rs",
-      "path": "examples/demo-app/src/bin/console.rs",
-      "product": "serenade",
-      "sha256": "87133c6d21e353e4261a987cacac081d357527c0ab2c48410b9c06e0818cd284",
-      "title": "console.rs"
-    },
-    {
-      "id": "serenade/examples/demo-app/src/bundle.rs",
-      "path": "examples/demo-app/src/bundle.rs",
-      "product": "serenade",
-      "sha256": "da516b3da87722f9a3eb37cbeecd6ab9eb3fbb7e00a83c83e8fc7c808b90f15f",
-      "title": "bundle.rs"
-    },
-    {
-      "id": "serenade/examples/demo-app/src/lib.rs",
-      "path": "examples/demo-app/src/lib.rs",
-      "product": "serenade",
-      "sha256": "526498bc8d102724f3ae80c3d1ddc9b60f361abf78d0ef0e22995a5911969bc3",
-      "title": "lib.rs"
-    },
-    {
-      "id": "serenade/examples/demo-app/src/main.rs",
-      "path": "examples/demo-app/src/main.rs",
-      "product": "serenade",
-      "sha256": "84ed20ac3705f7453093f693f84660a10c9c2e23c49f71377d1049fb70ca7126",
-      "title": "main.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/Cargo.toml",
-      "path": "examples/demo-universal/apps/demo-back/Cargo.toml",
-      "product": "serenade",
-      "sha256": "2c024e7b2adf8f8d16bec52404e3569a8a9c61de1cdb85a73290ff31ca8b716a",
-      "title": "Used by Rangular-generated Rust for its browser event types."
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/build.rs",
-      "path": "examples/demo-universal/apps/demo-back/build.rs",
-      "product": "serenade",
-      "sha256": "028c3b01e7b5f639f9af84f1183a22216c7afb5947826433fa7bbd0838c1b441",
-      "title": "build.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/src/assets.rs",
-      "path": "examples/demo-universal/apps/demo-back/src/assets.rs",
-      "product": "serenade",
-      "sha256": "4d888856fb67ca1e9d2bb90ef65430f6590cc7c36e77b33648ed3ea2e83a8e68",
-      "title": "assets.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/src/html.rs",
-      "path": "examples/demo-universal/apps/demo-back/src/html.rs",
-      "product": "serenade",
-      "sha256": "ab89fdcc49275472901eee9ead2c7561c3e58f329eb8a540dab4d95e089939f4",
-      "title": "html.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/src/main.rs",
-      "path": "examples/demo-universal/apps/demo-back/src/main.rs",
-      "product": "serenade",
-      "sha256": "db7ae0ae6094d3a31ea1c6ae71d8bc19be8d50ff621973610920759b804bc279",
-      "title": "main.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
-      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/body.html",
-      "product": "serenade",
-      "sha256": "0c11ffc44d561c3299236e17a126ca4ab97e9f01e8f429c2b4e71f1c422463f7",
-      "title": "body.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
-      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/document.html",
-      "product": "serenade",
-      "sha256": "805fb1b9e7bc50feaf03faf2d6b3a7843f49f0aee809d996031989f77545d59b",
-      "title": "document.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
-      "path": "examples/demo-universal/apps/demo-back/templates/cms-hello/head.html",
-      "product": "serenade",
-      "sha256": "9eb24e84409582e2a2f26b5ed11853d31ccd591c1dfdd56cd6ba329c3ce4e90d",
-      "title": "head.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/Cargo.toml",
-      "path": "examples/demo-universal/apps/demo-front/Cargo.toml",
-      "product": "serenade",
-      "sha256": "57bb1a06e0f1bea2a37ebf450ab0d1b2cf6f419eb02a53a9d92c7c03fb748e0b",
-      "title": "Cargo.toml"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/Trunk.toml",
-      "path": "examples/demo-universal/apps/demo-front/Trunk.toml",
-      "product": "serenade",
-      "sha256": "85ce4ef37a43ff150d3a6e5ca41f5a6e54f32f906ea85fde684e781c3db5cf63",
-      "title": "Trunk.toml"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/build.rs",
-      "path": "examples/demo-universal/apps/demo-front/build.rs",
-      "product": "serenade",
-      "sha256": "caafe28c3e6b3913a6ab95566dc838d38d953f37c355eed653faeae92218978e",
-      "title": "build.rs"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/index.html",
-      "path": "examples/demo-universal/apps/demo-front/index.html",
-      "product": "serenade",
-      "sha256": "4da90cf08a32143c87b538c84e9eac7dee66c7c5a9a30401b9ebaab39cd0fc89",
-      "title": "index.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
-      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-body.html",
-      "product": "serenade",
-      "sha256": "821315b88587b8943e42cc6490225869b8f7d37b8072a379f7cee94e6b187065",
-      "title": "cms-hello-body.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
-      "path": "examples/demo-universal/apps/demo-front/src/fixtures/cms-hello-head.html",
-      "product": "serenade",
-      "sha256": "3639de38807aca05216e1d80127563e6900ac3d092eaced10c3cdb46480a4e0a",
-      "title": "cms-hello-head.html"
-    },
-    {
-      "id": "serenade/examples/demo-universal/apps/demo-front/src/main.rs",
-      "path": "examples/demo-universal/apps/demo-front/src/main.rs",
-      "product": "serenade",
-      "sha256": "c77e453fc037e1de365f294d08548d0086d2042d971203d5a1bebf6ab19e4061",
-      "title": "main.rs"
-    },
-    {
-      "id": "rangular/demo-leptos/src/components/item_list/item_list.html",
-      "path": "demo-leptos/src/components/item_list/item_list.html",
-      "product": "rangular",
-      "sha256": "b0ea13a82168f73e83852d7bdc6e8c5ac5726280cea2bae7cdc0ef2668c44731",
-      "title": "item_list.html"
-    },
-    {
-      "id": "rangular/demo-leptos/src/components/item_list/item_list.rs",
-      "path": "demo-leptos/src/components/item_list/item_list.rs",
-      "product": "rangular",
-      "sha256": "ab3c8c778e9b58a1accdf2a9beae1d45962059db7fd50f9556f88a3bcc1dcaf2",
-      "title": "item_list.rs"
-    },
-    {
-      "id": "rangular/demo-leptos/src/components/item_list/item_list.scss",
-      "path": "demo-leptos/src/components/item_list/item_list.scss",
-      "product": "rangular",
-      "sha256": "d93a1d455ca10f15b280f14fd05ec784626312a285579f06f115371f7fbb15e9",
-      "title": "item_list.scss"
-    },
-    {
-      "id": "rangular/demo-leptos/src/components/item_list/mod.rs",
-      "path": "demo-leptos/src/components/item_list/mod.rs",
-      "product": "rangular",
-      "sha256": "5812cc41b24a3ef46963fa59d64530bba515803471946f216b8f3be09d40236c",
-      "title": "mod.rs"
-    },
-    {
-      "id": "rangular/docs/CHANGELOG.md",
-      "path": "docs/CHANGELOG.md",
-      "product": "rangular",
-      "sha256": "60753c2f227f310558754fe7682c754856e8d9fc5662ac14578cc53679a139c9",
-      "title": "Changelog"
-    },
-    {
-      "id": "rangular/docs/OVERVIEW.md",
-      "path": "docs/OVERVIEW.md",
-      "product": "rangular",
-      "sha256": "a00d5a69f9d108c4520abf9718e7e2983099b6dc4f09bac6456febaa8b2b9c9e",
-      "title": "rangular docs"
-    },
-    {
-      "id": "rangular/docs/README.md",
-      "path": "docs/README.md",
-      "product": "rangular",
-      "sha256": "0b0436b4d65ccf206fcbe45b90b85902aec9548836fef09d2f064196d3be5672",
-      "title": "rangular"
-    },
-    {
-      "id": "rangular/docs/SPEC.md",
-      "path": "docs/SPEC.md",
-      "product": "rangular",
-      "sha256": "dee070a497de7f35b0b01ab1f5bd8dcbf915f21653b094752ef8043e2b81c23e",
-      "title": "rangular specification v0.1"
     }
   ],
   "products": {
     "rangular": {
       "repository": "https://github.com/Interchouette-ITC/rangular",
-      "revision": "d6322602ebd2970f30dd98b791aa0e2a7018ea12",
-      "status": "tagged source",
-      "tag": "v1.1.0",
+      "revision": "5336c63d13b6b0b52519363baeae37e8a2ea4d55",
+      "status": "development snapshot",
+      "tag": null,
       "version": "1.1.0"
     },
     "serenade": {
       "repository": "https://github.com/Interchouette-ITC/Serenade",
-      "revision": "c0a4b4cc19c05c20d063c8cd4e5f54316477db0b",
+      "revision": "c58a61c3342455211cf9828da98182e193a785da",
       "status": "development snapshot",
       "tag": null,
       "version": "1.0.0"

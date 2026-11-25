@@ -1,27 +1,15 @@
 use std::{
     collections::BTreeMap,
     fs,
-    path::{Component, Path, PathBuf},
+    io::Read,
+    path::{Component, Path},
     process::Command,
 };
 
 use anyhow::{Context, bail, ensure};
-use clap::Parser;
+use flate2::read::GzDecoder;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-
-#[derive(Parser)]
-#[command(about = "Refresh embedded documentation from selected source commits")]
-struct Args {
-    #[arg(long)]
-    serenade_root: PathBuf,
-    #[arg(long)]
-    serenade_revision: String,
-    #[arg(long)]
-    rangular_root: PathBuf,
-    #[arg(long)]
-    rangular_revision: String,
-}
 
 const SERENADE_PATHS: &[&str] = &[
     "docs-dev",
@@ -32,36 +20,75 @@ const SERENADE_PATHS: &[&str] = &[
     "docs/astro/src/content/docs/concepts/architecture.md",
     "docs/astro/src/content/docs/concepts/bundles.md",
     "docs/astro/src/content/docs/reference/api-docs.md",
-    "examples/demo-app/src",
-    "examples/demo-universal/apps",
+    "examples",
 ];
 const RANGULAR_PATHS: &[&str] = &[
     "docs/README.md",
     "docs/SPEC.md",
     "docs/OVERVIEW.md",
     "docs/CHANGELOG.md",
-    "demo-leptos/src/components/item_list",
+    "demo-leptos",
+    "demo-tauri",
 ];
 
-fn git(root: &Path, args: &[&str]) -> anyhow::Result<Vec<u8>> {
-    let output = Command::new("git")
-        .arg("-C")
-        .arg(root)
-        .args(args)
+fn fetch(url: &str) -> anyhow::Result<Vec<u8>> {
+    let output = Command::new("curl")
+        .args([
+            "--fail",
+            "--silent",
+            "--show-error",
+            "--location",
+            "--connect-timeout",
+            "15",
+            "--max-time",
+            "120",
+            "--user-agent",
+            "serenade-rangular-mcp-refresh",
+            url,
+        ])
         .output()
-        .with_context(|| format!("run git in {}", root.display()))?;
+        .context("run curl")?;
     if !output.status.success() {
-        bail!(
-            "git failed in {}: {}",
-            root.display(),
-            String::from_utf8_lossy(&output.stderr)
-        );
+        bail!("fetch {url}: {}", String::from_utf8_lossy(&output.stderr));
     }
     Ok(output.stdout)
 }
 
-fn source_file(root: &Path, revision: &str, path: &str) -> anyhow::Result<Vec<u8>> {
-    git(root, &["show", &format!("{revision}:{path}")])
+struct Source {
+    tag: Option<String>,
+    revision: String,
+}
+
+fn resolve_commit(repository: &str, reference: &str) -> anyhow::Result<String> {
+    let api = format!("https://api.github.com/repos/Interchouette-ITC/{repository}");
+    let commit: Value = serde_json::from_slice(&fetch(&format!("{api}/commits/{reference}"))?)?;
+    let revision = commit["sha"].as_str().context("missing source commit")?;
+    ensure!(
+        revision.len() == 40
+            && revision
+                .bytes()
+                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+        "invalid {repository} source commit"
+    );
+    Ok(revision.to_owned())
+}
+
+fn latest_release(repository: &str) -> anyhow::Result<Source> {
+    let api = format!("https://api.github.com/repos/Interchouette-ITC/{repository}");
+    let release: Value = serde_json::from_slice(&fetch(&format!("{api}/releases/latest"))?)?;
+    let tag = release["tag_name"]
+        .as_str()
+        .context("missing release tag")?;
+    ensure!(
+        tag.starts_with('v')
+            && tag.len() > 1
+            && tag[1..].bytes().all(|b| b.is_ascii_digit() || b == b'.'),
+        "unsupported {repository} release tag {tag}"
+    );
+    Ok(Source {
+        tag: Some(tag.to_owned()),
+        revision: resolve_commit(repository, tag)?,
+    })
 }
 
 fn safe_path(path: &str) -> bool {
@@ -70,16 +97,23 @@ fn safe_path(path: &str) -> bool {
         .all(|component| matches!(component, Component::Normal(_)))
 }
 
+fn is_example_manifest(path: &str) -> bool {
+    (path.starts_with("examples/") || path.starts_with("demo-"))
+        && Path::new(path)
+            .file_name()
+            .is_some_and(|name| name == "Cargo.toml")
+}
+
 fn check_published_sources(root: &Path, revision: &str, version: &str) -> anyhow::Result<()> {
     let output = Command::new(std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into()))
-        .args(["metadata", "--locked", "--offline", "--format-version", "1"])
+        .args(["metadata", "--locked", "--format-version", "1"])
         .arg("--manifest-path")
         .arg(root.join("Cargo.toml"))
         .output()
-        .context("run offline cargo metadata")?;
+        .context("run cargo metadata")?;
     ensure!(
         output.status.success(),
-        "cargo metadata failed; fetch locked dependencies first: {}",
+        "cargo metadata failed: {}",
         String::from_utf8_lossy(&output.stderr)
     );
     let metadata: Value = serde_json::from_slice(&output.stdout)?;
@@ -115,6 +149,26 @@ fn check_published_sources(root: &Path, revision: &str, version: &str) -> anyhow
     Ok(())
 }
 
+fn update_parser(root: &Path, version: &str) -> anyhow::Result<()> {
+    let cargo: toml::Value = toml::from_str(&fs::read_to_string(root.join("Cargo.toml"))?)?;
+    if cargo["dependencies"]["rangular-parser"].as_str() == Some(format!("={version}").as_str()) {
+        return Ok(());
+    }
+    let status = Command::new(std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into()))
+        .current_dir(root)
+        .args(["add", "--package", "serenade-rangular-mcp"])
+        .arg(format!("rangular-parser@={version}"))
+        .arg("--manifest-path")
+        .arg(root.join("Cargo.toml"))
+        .status()
+        .context("update rangular-parser dependency")?;
+    ensure!(
+        status.success(),
+        "failed to update rangular-parser to {version}"
+    );
+    Ok(())
+}
+
 #[derive(Default)]
 struct Inventory {
     products: BTreeMap<String, Value>,
@@ -124,74 +178,62 @@ struct Inventory {
 
 fn refresh_product(
     product: &str,
-    root: &Path,
-    revision: &str,
-    paths: &[&str],
     repository: &str,
+    source: &Source,
+    paths: &[&str],
     inventory: &mut Inventory,
 ) -> anyhow::Result<()> {
-    ensure!(
-        revision.len() == 40
-            && revision
-                .bytes()
-                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
-        "{product}: revision must be a full lowercase commit SHA"
+    let url = format!(
+        "https://api.github.com/repos/Interchouette-ITC/{repository}/tarball/{}",
+        source.revision
     );
-    git(root, &["cat-file", "-e", &format!("{revision}^{{commit}}")])?;
-    let manifest = String::from_utf8(source_file(root, revision, "Cargo.toml")?)?;
-    let cargo: toml::Value = toml::from_str(&manifest)?;
-    let version = cargo["workspace"]["package"]["version"]
-        .as_str()
-        .context("missing workspace version")?;
-    let tag = format!("v{version}");
-    let tag_ref = format!("refs/tags/{tag}");
-    let tag_check = Command::new("git")
-        .arg("-C")
-        .arg(root)
-        .args(["show-ref", "--verify", "--quiet", &tag_ref])
-        .output()
-        .with_context(|| format!("check tag in {}", root.display()))?;
-    let matching_tag = match tag_check.status.code() {
-        Some(0) => {
-            let tag_revision = git(
-                root,
-                &["rev-parse", "--verify", &format!("{tag_ref}^{{commit}}")],
-            )?;
-            String::from_utf8(tag_revision)?.trim() == revision
-        }
-        Some(1) => false,
-        _ => bail!(
-            "check tag failed: {}",
-            String::from_utf8_lossy(&tag_check.stderr)
-        ),
-    };
-    if product == "rangular" {
-        ensure!(
-            matching_tag,
-            "Rangular documentation must match release tag {tag}"
-        );
-    }
-    inventory.products.insert(
-        product.to_owned(),
-        json!({
-            "version": version,
-            "revision": revision,
-            "status": if matching_tag { "tagged source" } else { "development snapshot" },
-            "tag": if matching_tag { Some(tag) } else { None },
-            "repository": repository
-        }),
-    );
-    let mut args = vec!["ls-tree", "-r", "--name-only", revision, "--"];
-    args.extend_from_slice(paths);
-    let files = String::from_utf8(git(root, &args)?)?;
+    let archive = fetch(&url)?;
+    let mut archive = tar::Archive::new(GzDecoder::new(archive.as_slice()));
     let before = inventory.documents.len();
-    for path in files.lines() {
-        let extension = Path::new(path).extension().and_then(|value| value.to_str());
-        if !matches!(extension, Some("md" | "rs" | "html" | "scss" | "toml")) {
+    let mut source_version = None;
+    for item in archive.entries().context("read release archive")? {
+        let mut item = item.context("read archive entry")?;
+        if !item.header().entry_type().is_file() {
             continue;
         }
+        let archive_path = item.path()?.into_owned();
+        let mut components = archive_path.components();
+        components.next().context("missing archive root")?;
+        let path = components.as_path();
+        let path = path.to_str().context("non-UTF-8 archive path")?;
         ensure!(safe_path(path), "unsafe source path: {path}");
-        let data = source_file(root, revision, path)?;
+        if path == "Cargo.toml" {
+            let mut manifest = String::new();
+            item.read_to_string(&mut manifest)?;
+            let cargo: toml::Value = toml::from_str(&manifest)?;
+            source_version = Some(
+                cargo["workspace"]["package"]["version"]
+                    .as_str()
+                    .context("missing workspace version")?
+                    .to_owned(),
+            );
+            continue;
+        }
+        if !paths.iter().any(|prefix| {
+            path == *prefix
+                || path
+                    .strip_prefix(*prefix)
+                    .is_some_and(|suffix| suffix.starts_with('/'))
+        }) {
+            continue;
+        }
+        if is_example_manifest(path) {
+            continue;
+        }
+        let extension = Path::new(path).extension().and_then(|value| value.to_str());
+        if !matches!(
+            extension,
+            Some("md" | "rs" | "html" | "scss" | "css" | "js" | "json" | "toml")
+        ) {
+            continue;
+        }
+        let mut data = Vec::new();
+        item.read_to_end(&mut data)?;
         let text = std::str::from_utf8(&data).with_context(|| format!("{path} is not UTF-8"))?;
         let title = text
             .lines()
@@ -220,52 +262,69 @@ fn refresh_product(
         inventory.documents.len() > before,
         "{product}: no documents found"
     );
+    let version = source_version.context("missing release workspace manifest")?;
+    if let Some(tag) = &source.tag {
+        ensure!(
+            *tag == format!("v{version}"),
+            "{product}: release tag {tag} does not match workspace version {version}"
+        );
+    }
+    inventory.products.insert(
+        product.to_owned(),
+        json!({
+            "version": version,
+            "revision": source.revision,
+            "status": if source.tag.is_some() { "tagged source" } else { "development snapshot" },
+            "tag": source.tag,
+            "repository": format!("https://github.com/Interchouette-ITC/{repository}")
+        }),
+    );
     Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
-    let args = Args::parse();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
         .nth(2)
         .context("refresh-docs must be under tools/")?;
-    let cargo: toml::Value = toml::from_str(&fs::read_to_string(root.join("Cargo.toml"))?)?;
-    let rangular_manifest = String::from_utf8(source_file(
-        &args.rangular_root,
-        &args.rangular_revision,
-        "Cargo.toml",
-    )?)?;
-    let rangular: toml::Value = toml::from_str(&rangular_manifest)?;
-    let version = rangular["workspace"]["package"]["version"]
-        .as_str()
-        .context("missing Rangular workspace version")?;
-    ensure!(
-        cargo["dependencies"]["rangular-parser"].as_str() == Some(format!("={version}").as_str()),
-        "update the exact rangular-parser version before refreshing"
-    );
-    check_published_sources(root, &args.rangular_revision, version)?;
+    let serenade = Source {
+        tag: None,
+        revision: resolve_commit("Serenade", "dev")?,
+    };
+    let rangular = Source {
+        tag: None,
+        revision: resolve_commit("rangular", "dev")?,
+    };
+    let parser_release = latest_release("rangular")?;
+    let version = parser_release
+        .tag
+        .as_deref()
+        .context("missing Rangular release tag")?
+        .strip_prefix('v')
+        .context("invalid Rangular tag")?;
+    update_parser(root, version)?;
+    check_published_sources(root, &parser_release.revision, version)?;
     let mut inventory = Inventory::default();
     refresh_product(
         "serenade",
-        &args.serenade_root,
-        &args.serenade_revision,
+        "Serenade",
+        &serenade,
         SERENADE_PATHS,
-        "https://github.com/Interchouette-ITC/Serenade",
         &mut inventory,
     )?;
     refresh_product(
         "rangular",
-        &args.rangular_root,
-        &args.rangular_revision,
+        "rangular",
+        &rangular,
         RANGULAR_PATHS,
-        "https://github.com/Interchouette-ITC/rangular",
         &mut inventory,
     )?;
     let Inventory {
         products,
-        documents,
+        mut documents,
         contents,
     } = inventory;
+    documents.sort_by(|left, right| left["id"].as_str().cmp(&right["id"].as_str()));
     let output = root.join("corpus/documents");
     let manifest_path = root.join("corpus/manifest.json");
     if manifest_path.exists() {
@@ -294,8 +353,63 @@ fn main() -> anyhow::Result<()> {
     serialized.push('\n');
     fs::write(manifest_path, serialized)?;
     println!(
-        "Refreshed {} documents from the selected commits.",
-        contents.len()
+        "Refreshed {} documents from Serenade dev and Rangular dev; parser uses Rangular {}.",
+        contents.len(),
+        parser_release
+            .tag
+            .as_deref()
+            .context("missing Rangular release tag")?
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{is_example_manifest, update_parser};
+    use std::{fs, path::Path};
+
+    #[test]
+    fn excludes_example_manifests_from_refresh() {
+        assert!(is_example_manifest(
+            "examples/demo-universal/apps/demo-front/Cargo.toml"
+        ));
+        assert!(is_example_manifest("demo-leptos/Cargo.toml"));
+        assert!(!is_example_manifest("examples/demo-app/src/main.rs"));
+    }
+
+    #[test]
+    fn updates_outdated_parser_and_lockfile() -> anyhow::Result<()> {
+        let project = tempfile::tempdir()?;
+        fs::create_dir(project.path().join("src"))?;
+        fs::create_dir(project.path().join(".cargo"))?;
+        fs::write(project.path().join("src/main.rs"), "fn main() {}\n")?;
+        fs::write(
+            project.path().join(".cargo/config.toml"),
+            "[net]\noffline = true\n",
+        )?;
+        fs::write(
+            project.path().join("Cargo.toml"),
+            "[package]\nname = \"serenade-rangular-mcp\"\nversion = \"0.1.0\"\nedition = \"2024\"\n\
+             [dependencies]\nrangular-parser = \"=0.0.0\"\n",
+        )?;
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .ancestors()
+            .nth(2)
+            .unwrap();
+        let manifest: toml::Value = toml::from_str(&fs::read_to_string(root.join("Cargo.toml"))?)?;
+        let version = manifest["dependencies"]["rangular-parser"]
+            .as_str()
+            .unwrap()
+            .strip_prefix('=')
+            .unwrap();
+        update_parser(project.path(), version)?;
+        let updated: toml::Value =
+            toml::from_str(&fs::read_to_string(project.path().join("Cargo.toml"))?)?;
+        assert_eq!(
+            updated["dependencies"]["rangular-parser"].as_str(),
+            Some(format!("={version}").as_str())
+        );
+        assert!(project.path().join("Cargo.lock").exists());
+        Ok(())
+    }
 }

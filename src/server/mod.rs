@@ -68,6 +68,24 @@ impl DocsServer {
 #[tool_handler(router = self.tool_router)]
 impl ServerHandler for DocsServer {
     fn get_info(&self) -> ServerConfig {
+        let instructions = match self.profile {
+            Profile::Serenade => {
+                "For a standalone app, install serenade-cli from crates.io and use serenade new; \
+                 read serenade/guides/first-steps/installation.md and serenade/docs-dev/RECIPES.md."
+            }
+            Profile::Rangular => {
+                "Read rangular/docs/README.md for published rangular and rangular-build dependencies. \
+                 Template validation uses the released parser, which may differ from development \
+                 documentation; it is not an application build."
+            }
+            Profile::All => {
+                "For a standalone app, install serenade-cli from crates.io and use serenade new; \
+                 read serenade/guides/first-steps/installation.md and serenade/docs-dev/RECIPES.md. \
+                 Read rangular/docs/README.md for published rangular and rangular-build dependencies. \
+                 Template validation uses the released parser, which may differ from development \
+                 documentation; it is not an application build."
+            }
+        };
         ServerConfig::new(
             ServerCapabilities::builder()
                 .enable_tools()
@@ -78,11 +96,11 @@ impl ServerHandler for DocsServer {
             "serenade-rangular-mcp",
             env!("CARGO_PKG_VERSION"),
         ))
-        .with_instructions(
-            "Search and read the embedded, revision-labelled Serenade and Rangular documentation. \
-             Code examples and CLI commands refer to the documented source revisions. \
-             Rangular template validation parses supplied text only; it is not an application build.",
-        )
+        .with_instructions(format!(
+            "Search and read the embedded, revision-labelled documentation. \
+             Code examples refer to the documented source revisions; repository examples may \
+             require their original workspaces. {instructions}"
+        ))
     }
 
     async fn list_resources(

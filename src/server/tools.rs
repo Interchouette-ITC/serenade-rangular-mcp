@@ -119,7 +119,7 @@ impl DocsServer {
     }
 
     #[tool(
-        description = "Search embedded Serenade and Rangular guides and examples. All search terms must match; retrieve full text with get_doc.",
+        description = "Search embedded Serenade and Rangular guides and examples by path and content. All search terms must match; retrieve full text with get_doc.",
         annotations(read_only_hint = true)
     )]
     async fn search_docs(
@@ -139,38 +139,40 @@ impl DocsServer {
             .split_whitespace()
             .map(str::to_lowercase)
             .collect();
-        let mut matches: Vec<_> = corpus::manifest()
-            .documents
-            .iter()
-            .filter(|doc| self.profile.includes(&doc.product))
-            .filter(|doc| product.is_none_or(|value| doc.product == value))
-            .filter_map(|doc| {
-                let title = doc.title.to_lowercase();
-                let text = corpus::text(doc).to_lowercase();
-                if !terms
-                    .iter()
-                    .all(|term| title.contains(term) || text.contains(term))
-                {
-                    return None;
-                }
-                let score: usize = terms
-                    .iter()
-                    .map(|term| {
-                        if title.contains(term) {
-                            10
-                        } else if corpus::text(doc)
-                            .lines()
-                            .any(|line| line.starts_with('#') && line.to_lowercase().contains(term))
-                        {
-                            5
-                        } else {
-                            1
-                        }
-                    })
-                    .sum();
-                Some((score, doc))
-            })
-            .collect();
+        let mut matches: Vec<_> =
+            corpus::manifest()
+                .documents
+                .iter()
+                .filter(|doc| self.profile.includes(&doc.product))
+                .filter(|doc| product.is_none_or(|value| doc.product == value))
+                .filter_map(|doc| {
+                    let title = doc.title.to_lowercase();
+                    let path = doc.path.to_lowercase();
+                    let text = corpus::text(doc).to_lowercase();
+                    if !terms.iter().all(|term| {
+                        title.contains(term) || path.contains(term) || text.contains(term)
+                    }) {
+                        return None;
+                    }
+                    let score: usize = terms
+                        .iter()
+                        .map(|term| {
+                            if title.contains(term) {
+                                10
+                            } else if path.contains(term) {
+                                8
+                            } else if corpus::text(doc).lines().any(|line| {
+                                line.starts_with('#') && line.to_lowercase().contains(term)
+                            }) {
+                                5
+                            } else {
+                                1
+                            }
+                        })
+                        .sum();
+                    Some((score, doc))
+                })
+                .collect();
         matches.sort_by(|left, right| right.0.cmp(&left.0).then(left.1.id.cmp(&right.1.id)));
         let hits: Vec<_> = matches.into_iter().take(limit).map(|(score, doc)| {
             serde_json::json!({"document": corpus::entry(doc), "score": score, "snippet": snippet(doc, &terms)})
@@ -195,7 +197,7 @@ impl DocsServer {
     }
 
     #[tool(
-        description = "Parse supplied Rangular component or head template text and report RANG diagnostics. This is not a full app build or AOT validation.",
+        description = "Parse supplied Rangular component or head template text with the released crates.io parser. Development documentation may differ; this is not a full app build or AOT validation.",
         annotations(read_only_hint = true)
     )]
     async fn validate_rangular_template(
@@ -240,8 +242,9 @@ impl DocsServer {
             "diagnostics": diagnostics,
             "diagnostic_count": parsed.diagnostics.len(),
             "diagnostics_truncated": parsed.diagnostics.len() > diagnostics.len(),
-            "version": corpus::manifest().products["rangular"],
-            "scope": "parser only; not a full application build"
+            "version": { "version": rangular_parser::VERSION, "status": "crates.io release" },
+            "documentation_version": corpus::manifest().products["rangular"],
+            "scope": "released parser only; development documentation may differ; not a full application build"
         }))
     }
 }

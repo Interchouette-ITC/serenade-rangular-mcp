@@ -219,6 +219,14 @@ mod tests {
     }
 
     #[test]
+    fn example_manifests_with_workspace_dependencies_are_not_embedded() {
+        assert!(manifest().documents.iter().all(|doc| {
+            !(doc.path.starts_with("examples/") || doc.path.starts_with("demo-"))
+                || !doc.path.ends_with("/Cargo.toml")
+        }));
+    }
+
+    #[test]
     fn oversized_text_pages_without_splitting_utf8() {
         let body = format!("{}éend", "a".repeat(MAX_CONTENT - 1));
         assert_eq!(chunk(&body, None).unwrap(), (None, None));
